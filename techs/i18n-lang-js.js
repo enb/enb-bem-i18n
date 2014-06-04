@@ -6,8 +6,6 @@
  *
  * Используется для локализации в JS с помощью BEM.I18N.
  *
- * Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
- *
  * **Опции**
  *
  * * *String* **target** — Результирующий таргет. По умолчанию — `?.lang.{lang}.js`.
@@ -29,7 +27,8 @@ module.exports = require('enb/lib/build-flow').create()
     .name('i18n-lang-js')
     .target('target', '?.lang.{lang}.js')
     .defineRequiredOption('lang')
-    .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
+    .useSourceFilename('keysetsFile', '?.keysets.{lang}.js')
+    .optionAlias('keysetsFile', 'keysetsTarget')
     .builder(function (keysetsFilename) {
         dropRequireCache(require, keysetsFilename);
         var keysets = require(keysetsFilename);
