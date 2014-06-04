@@ -10,7 +10,7 @@ enb-bem-i18n [![NPM version](https://badge.fury.io/js/enb-bem-i18n.svg)](http://
 npm install --save-dev enb-bem-i18n
 ```
 
-Для работы модуля требуется зависимость от пакета `enb` версии 0.11.1 или выше.
+Для работы модуля требуется зависимость от пакета enb версии 0.11.1 или выше.
 
 i18n-lang-js
 ============
