@@ -3,12 +3,12 @@
   "description": "BEM.I18N support for ENB",
   "name": "enb-bem-i18n",
   "version": "0.1.0",
-  "repository": "git://github.com/enb-make/enb-bem-i18n",
-  "homepage": "https://github.com/enb-make/enb-bem-i18n",
-  "bugs": "https://github.com/enb-make/enb-bem-i18n/issues",
+  "repository": "git://github.com/enb-bem/enb-bem-i18n",
+  "homepage": "https://github.com/enb-bem/enb-bem-i18n",
+  "bugs": "https://github.com/enb-bem/enb-bem-i18n/issues",
   "licenses": [{
     "type": "MIT",
-    "url": "https://github.com/enb-make/enb-bem-i18n/blob/master/LICENSE"
+    "url": "https://github.com/enb-bem/enb-bem-i18n/blob/master/LICENSE"
   }],
   "contributors": [
     {
