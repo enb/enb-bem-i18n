@@ -1,5 +1,7 @@
-enb-bem-i18n [![NPM version](https://badge.fury.io/js/enb-bem-i18n.svg)](http://badge.fury.io/js/enb-bem-i18n) [![Build Status](https://travis-ci.org/enb-bem/enb-bem-i18n.svg?branch=master)](https://travis-ci.org/enb-bem/enb-bem-i18n) [![Dependency Status](https://gemnasium.com/enb-bem/enb-bem-i18n.svg)](https://gemnasium.com/enb-bem/enb-bem-i18n)
+enb-bem-i18n
 ============
+
+[![NPM version](http://img.shields.io/npm/v/enb-bem-i18n.svg?style=flat)](http://badge.fury.io/js/enb-bem-i18n) [![Build Status](http://img.shields.io/travis/enb-bem/enb-bem-i18n.svg?branch=master&style=flat)](https://travis-ci.org/enb-bem/enb-bem-i18n) [![devDependency Status](http://img.shields.io/david/dev/enb-bem/enb-bem-i18n.svg?style=flat)](https://david-dm.org/enb-bem/enb-bem-i18n#info=devDependencies)
 
 Поддержка `BEM.I18N` для ENB.
 
