@@ -52,12 +52,3 @@ nodeConfig.addTechs([
   [ require('enb-bem-i18n/techs/i18n-merge-keysets'), { lang: '{lang}' } ]
 ]);
 ```
-
-История изменений
------------------
-
-История изменений на [отдельной странице](/CHANGELOG.md).
-
-Разработка
-----------
-Руководство на [отдельной странице](/CONTRIBUTION.md).
