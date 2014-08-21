@@ -1,7 +1,7 @@
 enb-bem-i18n
 ============
 
-[![NPM version](http://img.shields.io/npm/v/enb-bem-i18n.svg?style=flat)](http://badge.fury.io/js/enb-bem-i18n) [![Build Status](http://img.shields.io/travis/enb-bem/enb-bem-i18n.svg?branch=master&style=flat)](https://travis-ci.org/enb-bem/enb-bem-i18n) [![devDependency Status](http://img.shields.io/david/dev/enb-bem/enb-bem-i18n.svg?style=flat)](https://david-dm.org/enb-bem/enb-bem-i18n#info=devDependencies)
+[![NPM version](http://img.shields.io/npm/v/enb-bem-i18n.svg?style=flat)](https://www.npmjs.org/package/enb-bem-i18n) [![Build Status](http://img.shields.io/travis/enb-bem/enb-bem-i18n/master.svg?style=flat)](https://travis-ci.org/enb-bem/enb-bem-i18n) [![devDependency Status](http://img.shields.io/david/dev/enb-bem/enb-bem-i18n.svg?style=flat)](https://david-dm.org/enb-bem/enb-bem-i18n#info=devDependencies)
 
 Поддержка `BEM.I18N` для ENB.
 
@@ -14,8 +14,13 @@ npm install --save-dev enb-bem-i18n
 
 Для работы модуля требуется зависимость от пакета `enb` версии `0.11.0` или выше.
 
-i18n-lang-js
-============
+Технологии
+----------
+
+* [i18n-lang-js](#i18n-lang-js)
+* [i18n-merge-keysets](#i18n-merge-keysets)
+
+### i18n-lang-js
 
 Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
 
@@ -36,8 +41,7 @@ nodeConfig.addTechs([
 ]);
 ```
 
-i18n-merge-keysets
-==================
+### i18n-merge-keysets
 
 Собирает `?.keysets.<язык>.js`-файлы на основе `*.i18n`-папок для указанных языков.
 
