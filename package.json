@@ -26,10 +26,13 @@
   "peerDependencies": {
     "enb": ">= 0.11.0 < 1.0.0"
   },
+  "dependencies": {
+    "vow": "0.4.5"
+  },
   "devDependencies": {
     "enb": ">= 0.11.0 < 1.0.0",
     "enb-validate-code": "0.0.1",
-    "jshint": "2.5.3",
+    "jshint": "2.5.4",
     "jscs": "1.4.5"
   },
   "scripts": {

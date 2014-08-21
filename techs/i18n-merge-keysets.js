@@ -18,7 +18,7 @@
  * ]);
  * ```
  */
-var Vow = require('vow');
+var vow = require('vow');
 var asyncRequire = require('enb/lib/fs/async-require');
 
 module.exports = require('enb/lib/build-flow.js').create()
@@ -36,7 +36,7 @@ module.exports = require('enb/lib/build-flow.js').create()
         });
 
         var result = {};
-        return Vow.all(langKeysetFiles.map(function (keysetFile) {
+        return vow.all(langKeysetFiles.map(function (keysetFile) {
             return asyncRequire(keysetFile.fullname).then(function (keysets) {
                 if (lang === 'all') { // XXX: Why the hell they break the pattern?
                     keysets = keysets.all || {};
