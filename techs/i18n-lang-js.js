@@ -41,11 +41,11 @@ module.exports = require('enb/lib/build-flow').create()
         return this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang);
     })
     .methods({
-        getPrependJs: function () {
-            return '';
+        getPrependJs: function (lang) {
+            return lang === 'all' ? '' : 'if (typeof BEM !== \'undefined\' && BEM.I18N) {';
         },
         getAppendJs: function (lang) {
-            return lang === 'all' ? '' : '\n\nBEM.I18N.lang(\'' + lang + '\');\n';
+            return lang === 'all' ? '' : '\n\nBEM.I18N.lang(\'' + lang + '\');\n\n}\n';
         }
     })
     .staticMethods({
