@@ -18,8 +18,8 @@
  * ]);
  * ```
  */
-var vow = require('vow');
-var asyncRequire = require('enb/lib/fs/async-require');
+var vow = require('vow'),
+    asyncRequire = require('enb/lib/fs/async-require');
 
 module.exports = require('enb/lib/build-flow.js').create()
     .name('i18n-merge-keysets')
@@ -27,15 +27,15 @@ module.exports = require('enb/lib/build-flow.js').create()
     .useDirList('i18n')
     .target('target', '?.keysets.{lang}.js')
     .builder(function (langKeysetDirs) {
-        var lang = this._lang;
-        var langJs = lang + '.js';
-        var langKeysetFiles = [].concat.apply([], langKeysetDirs.map(function (dir) {
-            return dir.files;
-        })).filter(function (fileInfo) {
-            return fileInfo.name === langJs;
-        });
+        var lang = this._lang,
+            langJs = lang + '.js',
+            langKeysetFiles = [].concat.apply([], langKeysetDirs.map(function (dir) {
+                return dir.files;
+            })).filter(function (fileInfo) {
+                return fileInfo.name === langJs;
+            }),
+            result = {};
 
-        var result = {};
         return vow.all(langKeysetFiles.map(function (keysetFile) {
             return asyncRequire(keysetFile.fullname).then(function (keysets) {
                 if (lang === 'all') { // XXX: Why the hell they break the pattern?

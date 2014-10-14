@@ -20,8 +20,8 @@
  * ]);
  * ```
  */
-var tanker = require('enb/exlib/tanker');
-var dropRequireCache = require('enb/lib/fs/drop-require-cache');
+var tanker = require('enb/exlib/tanker'),
+    dropRequireCache = require('enb/lib/fs/drop-require-cache');
 
 module.exports = require('enb/lib/build-flow').create()
     .name('i18n-lang-js')
@@ -31,10 +31,12 @@ module.exports = require('enb/lib/build-flow').create()
     .optionAlias('keysetsFile', 'keysetsTarget')
     .builder(function (keysetsFilename) {
         dropRequireCache(require, keysetsFilename);
-        var keysets = require(keysetsFilename);
-        var _this = this;
-        var lang = this._lang;
-        var res = [];
+
+        var keysets = require(keysetsFilename),
+            _this = this,
+            lang = this._lang,
+            res = [];
+
         Object.keys(keysets).sort().forEach(function (keysetName) {
             res.push(_this.__self.getKeysetBuildResult(keysetName, keysets[keysetName], lang));
         });

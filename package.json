@@ -31,9 +31,8 @@
   },
   "devDependencies": {
     "enb": ">= 0.11.0 < 1.0.0",
-    "enb-validate-code": "0.0.1",
-    "jshint": "2.5.4",
-    "jscs": "1.4.5"
+    "jscs": "1.6.2",
+    "jshint": "2.5.6"
   },
   "scripts": {
     "test": "npm run lint",
