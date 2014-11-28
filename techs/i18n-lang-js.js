@@ -20,7 +20,7 @@
  * ]);
  * ```
  */
-var tanker = require('enb/exlib/tanker'),
+var tanker = require('../exlib/tanker'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache');
 
 module.exports = require('enb/lib/build-flow').create()
