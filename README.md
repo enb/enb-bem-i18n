@@ -17,6 +17,7 @@ npm install --save-dev enb-bem-i18n
 Технологии
 ----------
 
+* [i18n-keysets-xml](#i18n-keysets-xml)
 * [i18n-lang-js](#i18n-lang-js)
 * [i18n-merge-keysets](#i18n-merge-keysets)
 
@@ -58,6 +59,24 @@ nodeConfig.addTechs([
   [ require('enb-bem-i18n/techs/i18n-merge-keysets'), { lang: '{lang}' } ]
 ]);
 ```
+
+### i18n-keysets-xml
+
+Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
+
+Используется для локализации xml-страниц.
+
+**Опции**
+
+* *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
+* *String* **lang** — Язык, для которого небходимо собрать файл.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
+```
+
 
 Лицензия
 --------
