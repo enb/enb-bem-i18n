@@ -29,6 +29,7 @@
     "enb": ">= 0.11.0 < 1.0.0"
   },
   "dependencies": {
+    "dom-js": "0.0.9",
     "vow": "0.4.8"
   },
   "devDependencies": {
