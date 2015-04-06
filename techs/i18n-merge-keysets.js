@@ -19,7 +19,8 @@
  * ```
  */
 var vow = require('vow'),
-    asyncRequire = require('enb/lib/fs/async-require');
+    asyncRequire = require('enb/lib/fs/async-require'),
+    dropRequireCache = require('enb/lib/fs/drop-require-cache');
 
 module.exports = require('enb/lib/build-flow.js').create()
     .name('i18n-merge-keysets')
@@ -34,27 +35,47 @@ module.exports = require('enb/lib/build-flow.js').create()
             })).filter(function (fileInfo) {
                 return fileInfo.name === langJs;
             }),
+            node = this.node,
+            cache = node.getNodeCache(this._target),
             result = {};
 
         return vow.all(langKeysetFiles.map(function (keysetFile) {
-            return asyncRequire(keysetFile.fullname).then(function (keysets) {
-                if (lang === 'all') { // XXX: Why the hell they break the pattern?
-                    keysets = keysets.all || {};
-                }
-                Object.keys(keysets).forEach(function (keysetName) {
-                    var keyset = keysets[keysetName];
-                    result[keysetName] = (result[keysetName] || {});
-                    if (typeof keyset !== 'string') {
-                        Object.keys(keyset).forEach(function (keyName) {
-                            result[keysetName][keyName] = keyset[keyName];
+                var filename = keysetFile.fullname,
+                    basename = keysetFile.name,
+                    cacheKey = 'keyset-file-' + basename,
+                    promise;
+
+                if (cache.needRebuildFile(cacheKey, filename)) {
+                    dropRequireCache(require, filename);
+                    promise = asyncRequire(filename)
+                        .then(function (keysets) {
+                            cache.cacheFileInfo(cacheKey, filename);
+
+                            return keysets;
                         });
-                    } else {
-                        result[keysetName] = keyset;
+                } else {
+                    promise = asyncRequire(filename);
+                }
+
+                promise.then(function (keysets) {
+                    if (lang === 'all') { // XXX: Why the hell they break the pattern?
+                        keysets = keysets.all || {};
                     }
+                    Object.keys(keysets).forEach(function (keysetName) {
+                        var keyset = keysets[keysetName];
+                        result[keysetName] = (result[keysetName] || {});
+                        if (typeof keyset !== 'string') {
+                            Object.keys(keyset).forEach(function (keyName) {
+                                result[keysetName][keyName] = keyset[keyName];
+                            });
+                        } else {
+                            result[keysetName] = keyset;
+                        }
+                    });
                 });
+            }))
+            .then(function () {
+                return 'module.exports = ' + JSON.stringify(result) + ';';
             });
-        })).then(function () {
-            return 'module.exports = ' + JSON.stringify(result) + ';';
-        });
     })
     .createTech();
