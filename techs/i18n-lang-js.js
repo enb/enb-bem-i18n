@@ -20,7 +20,9 @@
  * ]);
  * ```
  */
-var tanker = require('../exlib/tanker'),
+var path = require('path'),
+    tanker = require('../exlib/tanker'),
+    asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache');
 
 module.exports = require('enb/lib/build-flow').create()
@@ -30,17 +32,32 @@ module.exports = require('enb/lib/build-flow').create()
     .useSourceFilename('keysetsFile', '?.keysets.{lang}.js')
     .optionAlias('keysetsFile', 'keysetsTarget')
     .builder(function (keysetsFilename) {
-        dropRequireCache(require, keysetsFilename);
+        var node = this.node,
+            cache = node.getNodeCache(this._target),
+            basename = path.basename(keysetsFilename),
+            cacheKey = 'keysets-file-' + basename,
+            promise;
 
-        var keysets = require(keysetsFilename),
-            _this = this,
-            lang = this._lang,
-            res = [];
+        if (cache.needRebuildFile(cacheKey, keysetsFilename)) {
+            dropRequireCache(require, keysetsFilename);
+            promise = asyncRequire(keysetsFilename)
+                .then(function (keysets) {
+                    cache.cacheFileInfo(cacheKey, keysetsFilename);
+                    return keysets;
+                });
+        } else {
+            promise = asyncRequire(keysetsFilename);
+        }
 
-        Object.keys(keysets).sort().forEach(function (keysetName) {
-            res.push(_this.__self.getKeysetBuildResult(keysetName, keysets[keysetName], lang));
-        });
-        return this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang);
+        return promise.then(function (keysets) {
+            var _this = this,
+                lang = this._lang,
+                res = Object.keys(keysets).sort().reduce(function (prev, keysetName) {
+                prev.push(_this.__self.getKeysetBuildResult(keysetName, keysets[keysetName], lang));
+                return prev;
+            }, []);
+            return this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang);
+        }, this)
     })
     .methods({
         getPrependJs: function (lang) {
