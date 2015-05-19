@@ -50,12 +50,11 @@ module.exports = require('enb/lib/build-flow').create()
         }
 
         return promise.then(function (keysets) {
-            var _this = this,
-                lang = this._lang,
+            var lang = this._lang,
                 res = Object.keys(keysets).sort().reduce(function (prev, keysetName) {
-                prev.push(_this.__self.getKeysetBuildResult(keysetName, keysets[keysetName], lang));
-                return prev;
-            }, []);
+                    prev.push(this.__self.getKeysetBuildResult(keysetName, keysets[keysetName], lang));
+                    return prev;
+                }.bind(this), []);
             return this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang);
         }, this)
     })
