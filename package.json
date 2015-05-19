@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "enb": ">= 0.11.0 < 1.0.0",
+    "istanbul": "0.3.14",
     "jscs": "1.10.0",
     "jshint": "2.6.0",
     "mocha": "2.2.1",
@@ -43,6 +44,8 @@
   "scripts": {
     "test": "npm run lint && npm run unit",
     "lint": "jshint . && jscs -c .jscs.js .",
-    "unit": "mocha test/techs/*.test.js"
+    "unit": "mocha -R spec",
+    "cover": "istanbul cover _mocha",
+    "coveralls": "npm i coveralls && npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   }
 }
