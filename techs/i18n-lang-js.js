@@ -56,7 +56,7 @@ module.exports = require('enb/lib/build-flow').create()
                     return prev;
                 }.bind(this), []);
             return this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang);
-        }, this)
+        }, this);
     })
     .methods({
         getPrependJs: function (lang) {

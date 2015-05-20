@@ -150,7 +150,7 @@ function build(keysets, lang) {
     for (var i = 0; i < keysets.length; ++i) {
         var keyset = keysets[i],
             basename = Object.keys(keyset)[0],
-            data = keyset[basename ];
+            data = keyset[basename];
 
         fsScheme.bundle['bundle.keysets.' + basename] = 'module.exports = ' + JSON.stringify(data) + ';';
     }
@@ -185,4 +185,3 @@ function buildWithCache(initialScheme, modifiedScheme, lang) {
             return res.toString();
         });
 }
-
