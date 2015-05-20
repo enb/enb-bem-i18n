@@ -49,6 +49,27 @@ describe('i18n-lang-js', function () {
             });
     });
 
+    it('must get valid *.lang from empty *.keyset file', function () {
+        var keysets = [
+                {
+                    'lang.js': {}
+                }
+            ],
+            expected = [
+                'if (typeof BEM !== \'undefined\' && BEM.I18N) {',
+                '',
+                'BEM.I18N.lang(\'lang\');',
+                '',
+                '}',
+                ''
+            ].join('\n');
+
+        return build(keysets, 'lang')
+            .then(function (res) {
+                res.must.eql(expected);
+            });
+    });
+
     it('must provide core', function () {
         var keysets = [
             {
