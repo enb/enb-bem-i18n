@@ -46,6 +46,24 @@ describe('i18n-keysets-xml', function () {
                 res.must.eql(expected);
             });
     });
+
+    it('must get empty *.lang.xml from empty *.keyset file', function () {
+        var keysets = [
+                { 'lang.js': {} }
+            ],
+            expected = [
+                '<?xml version="1.0" encoding="utf-8"?>',
+                '<tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform" ' +
+                'xmlns:i18n="urn:yandex-functions:internationalization">',
+                '',
+                '</tanker>'
+            ].join('\n');
+
+        return build(keysets, 'lang')
+            .then(function (res) {
+                res.must.eql(expected);
+            });
+    });
 });
 
 function build(keysets, lang) {
