@@ -168,20 +168,16 @@ function build(keysets, lang) {
 function buildWithCache(initialScheme, modifiedScheme, lang) {
     mockFs(initialScheme);
 
-    var bundle = new TestNode('bundle'),
-        keySetsFileName = 'bundle.keysets.lang.js',
-        cache = bundle.getNodeCache('bundle.lang.lang.js'),
-        dirname = path.resolve('./bundle'),
-        keysetsFileFullPath = path.join(dirname, keySetsFileName);
-
-    dropRequireCache(require, keysetsFileFullPath);
-    require(keysetsFileFullPath);
-    cache.cacheFileInfo('keysets-file-' + keySetsFileName, keysetsFileFullPath);
-
-    mockFs(modifiedScheme);
+    var bundle = new TestNode('bundle');
 
     return bundle.runTechAndGetContent(Tech, { lang: lang })
-        .spread(function (res) {
+        .then(function () {
+            return mockFs(modifiedScheme);
+        })
+        .then(function () {
+            return bundle.runTechAndGetContent(Tech, { lang: lang });
+        })
+        .then(function (res) {
             return res.toString();
         });
 }
