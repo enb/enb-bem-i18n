@@ -17,7 +17,9 @@
  * nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
  * ```
  */
-var domjs = require('dom-js'),
+var path = require('path'),
+    domjs = require('dom-js'),
+    asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache');
 
 module.exports = require('enb/lib/build-flow').create()
@@ -26,29 +28,46 @@ module.exports = require('enb/lib/build-flow').create()
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
     .builder(function (keysetsFilename) {
-        dropRequireCache(require, keysetsFilename);
-        var lang = this._lang,
-            keysets = require(keysetsFilename),
-            res = Object.keys(keysets).sort().reduce(function (prev, keysetName) {
-                var keyset = keysets[keysetName];
-                prev.push('<keyset id="' + keysetName + '">');
-                Object.keys(keyset).forEach(function (key) {
-                    var value = keyset[key],
-                        dom = new domjs.DomJS();
-                    try {
-                        dom.parse('<root>' + value + '</root>', function () {});
-                    } catch (e) {
-                        value = domjs.escape(value);
-                    }
-                    prev.push('<key id="' + key + '">');
-                    prev.push('<value>' + value + '</value>');
-                    prev.push('</key>');
-                });
-                prev.push('</keyset>');
-                return prev;
-            }, []);
+        var node = this.node,
+            cache = node.getNodeCache(this._target),
+            basename = path.basename(keysetsFilename),
+            cacheKey = 'keysets-file-' + basename,
+            promise;
 
-        return this.getPrependXml(lang) + res.join('\n') + this.getAppendXml(lang);
+        if (cache.needRebuildFile(cacheKey, keysetsFilename)) {
+            dropRequireCache(require, keysetsFilename);
+            promise = asyncRequire(keysetsFilename)
+                .then(function (keysets) {
+                    cache.cacheFileInfo(cacheKey, keysetsFilename);
+                    return keysets;
+                });
+        } else {
+            promise = asyncRequire(keysetsFilename);
+        }
+
+        return promise.then(function (keysets) {
+            var lang = this._lang,
+                res = Object.keys(keysets).sort().reduce(function (prev, keysetName) {
+                    var keyset = keysets[keysetName];
+                    prev.push('<keyset id="' + keysetName + '">');
+                    Object.keys(keyset).forEach(function (key) {
+                        var value = keyset[key],
+                            dom = new domjs.DomJS();
+                        try {
+                            dom.parse('<root>' + value + '</root>', function () {});
+                        } catch (e) {
+                            value = domjs.escape(value);
+                        }
+                        prev.push('<key id="' + key + '">');
+                        prev.push('<value>' + value + '</value>');
+                        prev.push('</key>');
+                    });
+                    prev.push('</keyset>');
+                    return prev;
+                }, []);
+
+            return this.getPrependXml(lang) + res.join('\n') + this.getAppendXml(lang);
+        }, this);
     })
     .methods({
         getPrependXml: function () {
