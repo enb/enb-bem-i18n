@@ -88,22 +88,8 @@ describe('i18n-lang-js', function () {
     describe('cache', function () {
         it('must get keyset from cache', function () {
             var time = new Date(1),
-                initialScheme = {
-                    bundle: {
-                        'bundle.keysets.lang.js': mockFs.file({
-                            content: 'module.exports = { scope: { key: "val" } };',
-                            mtime: time
-                        })
-                    }
-                },
-                modifiedScheme = {
-                    bundle: {
-                        'bundle.keysets.lang.js': mockFs.file({
-                            content: 'module.exports = { scope: { key: "val2" } };',
-                            mtime: time
-                        })
-                    }
-                },
+                initial = { val: 'val', mtime: time },
+                modified = { val: 'val2', mtime: time },
                 expected = [
                     'if (typeof BEM !== \'undefined\' && BEM.I18N) {BEM.I18N.decl(\'scope\', {',
                     '    "key": \'val\'',
@@ -117,29 +103,15 @@ describe('i18n-lang-js', function () {
                     ''
                 ].join('\n');
 
-            return buildWithCache(initialScheme, modifiedScheme, 'lang')
+            return buildWithCache(initial, modified, 'lang')
                 .then(function (res) {
                     res.must.eql(expected);
                 });
         });
 
         it('must ignore outdated cache', function () {
-            var initialScheme = {
-                    bundle: {
-                        'bundle.keysets.lang.js': mockFs.file({
-                            content: 'module.exports = { scope: { key: "val" } };',
-                            mtime: new Date(1)
-                        })
-                    }
-                },
-                modifiedScheme = {
-                    bundle: {
-                        'bundle.keysets.lang.js': mockFs.file({
-                            content: 'module.exports = { scope: { key: "val2" } };',
-                            mtime: new Date(2)
-                        })
-                    }
-                },
+            var initial = { val: 'val', mtime: new Date(1) },
+                modified = { val: 'val2', mtime: new Date(2) },
                 expected = [
                     'if (typeof BEM !== \'undefined\' && BEM.I18N) {BEM.I18N.decl(\'scope\', {',
                     '    "key": \'val2\'',
@@ -153,7 +125,7 @@ describe('i18n-lang-js', function () {
                     ''
                 ].join('\n');
 
-            return buildWithCache(initialScheme, modifiedScheme, 'lang')
+            return buildWithCache(initial, modified, 'lang')
                 .then(function (res) {
                     res.must.eql(expected);
                 });
@@ -184,14 +156,25 @@ function build(keysets, lang) {
         });
 }
 
-function buildWithCache(initialScheme, modifiedScheme, lang) {
-    mockFs(initialScheme);
+function buildWithCache(initial, modified, lang) {
+    function buildScheme(data) {
+        return {
+            bundle: {
+                'bundle.keysets.lang.js': mockFs.file({
+                    content: 'module.exports = { scope: { key: "' + data.val + '" } };',
+                    mtime: data.mtime
+                })
+            }
+        };
+    }
+
+    mockFs(buildScheme(initial));
 
     var bundle = new TestNode('bundle');
 
     return bundle.runTechAndGetContent(Tech, { lang: lang })
         .then(function () {
-            return mockFs(modifiedScheme);
+            return mockFs(buildScheme(modified));
         })
         .then(function () {
             return bundle.runTechAndGetContent(Tech, { lang: lang });
