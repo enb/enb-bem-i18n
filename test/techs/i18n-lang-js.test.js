@@ -1,7 +1,5 @@
-var path = require('path'),
-    mockFs = require('mock-fs'),
+var mockFs = require('mock-fs'),
     TestNode = require('enb/lib/test/mocks/test-node'),
-    dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../techs/i18n-lang-js');
 
 describe('i18n-lang-js', function () {
