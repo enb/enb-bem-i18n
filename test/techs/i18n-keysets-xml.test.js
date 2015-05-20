@@ -64,6 +64,31 @@ describe('i18n-keysets-xml', function () {
                 res.must.eql(expected);
             });
     });
+
+    describe('cache', function () {
+        it('must get keyset from cache', function () {
+            var time = new Date(1),
+                initial = { val: 'val', mtime: time },
+                modified = { val: 'val2', mtime: time },
+                expected = buildExpectedXml('val');
+
+            return buildWithCache(initial, modified, 'lang')
+                .then(function (res) {
+                    res.must.eql(expected);
+                });
+        });
+
+        it('must ignore outdated cache', function () {
+            var initial = { val: 'val', mtime: new Date(1) },
+                modified = { val: 'val2', mtime: new Date(2) },
+                expected = buildExpectedXml('val2');
+
+            return buildWithCache(initial, modified, 'lang')
+                .then(function (res) {
+                    res.must.eql(expected);
+                });
+        });
+    });
 });
 
 function build(keysets, lang) {
@@ -87,4 +112,46 @@ function build(keysets, lang) {
         .spread(function (res) {
             return res.toString();
         });
+}
+
+function buildWithCache(initial, modified, lang) {
+    function buildScheme(data) {
+        return {
+            bundle: {
+                'bundle.keysets.lang.js': mockFs.file({
+                    content: 'module.exports = { scope: { key: "' + data.val + '" } };',
+                    mtime: data.mtime
+                })
+            }
+        };
+    }
+
+    mockFs(buildScheme(initial));
+
+    var bundle = new TestNode('bundle');
+
+    return bundle.runTechAndGetContent(Tech, { lang: lang })
+        .then(function () {
+            return mockFs(buildScheme(modified));
+        })
+        .then(function () {
+            return bundle.runTechAndGetContent(Tech, { lang: lang });
+        })
+        .then(function (res) {
+            return res.toString();
+        });
+}
+
+function buildExpectedXml(val) {
+    return [
+        '<?xml version="1.0" encoding="utf-8"?>',
+        '<tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform" ' +
+        'xmlns:i18n="urn:yandex-functions:internationalization">',
+        '<keyset id="scope">',
+        '<key id="key">',
+        '<value>' + val + '</value>',
+        '</key>',
+        '</keyset>',
+        '</tanker>'
+    ].join('\n');
 }
