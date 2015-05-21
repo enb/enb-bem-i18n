@@ -47,6 +47,34 @@ describe('i18n-keysets-xml', function () {
             });
     });
 
+    it('must get valid *.lang.xml from *.keyset file with xml values', function () {
+        var keysets = [
+                {
+                    'lang.js': {
+                        scope: {
+                            key: 'Hello<br>World'
+                        }
+                    }
+                }
+            ],
+            expected = [
+                '<?xml version="1.0" encoding="utf-8"?>',
+                '<tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform" ' +
+                'xmlns:i18n="urn:yandex-functions:internationalization">',
+                '<keyset id="scope">',
+                '<key id="key">',
+                '<value>Hello&lt;br&gt;World</value>',
+                '</key>',
+                '</keyset>',
+                '</tanker>'
+            ].join('\n');
+
+        return build(keysets, 'lang')
+            .then(function (res) {
+                res.must.eql(expected);
+            });
+    });
+
     it('must get empty *.lang.xml from empty *.keyset file', function () {
         var keysets = [
                 { 'lang.js': {} }
