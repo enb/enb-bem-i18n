@@ -144,7 +144,7 @@ nodeConfig.addTechs([
 ```
 
 Данная технология принимает на вход результаты полученные при выполнении [i18n-merge-keysets](#i18n-merge-keysets),
-следовательно для ее работы необходимо предварительная сборка `*.keysets.lang.js` файлов при
+следовательно для ее работы необходима предварительная сборка `*.keysets.lang.js` файлов при
 помощи технологии [i18n-merge-keysets](#i18n-merge-keysets).
 
 Задачей данной технологии является построение кода-обертки для вызова методов локализации
@@ -164,7 +164,7 @@ module.exports = {
 };
 ```
 
-Технология `i18n-lang-js` превращает такую структуру данных локализации в код:
+Технология `i18n-lang-js` превращает такую структуру данных локализации в код файла `*.lang.en.js`:
 ```
 if (typeof BEM !== 'undefined' && BEM.I18N) {BEM.I18N.decl('block1', {
     "foo11": 'bar11',
@@ -203,6 +203,70 @@ BEM.I18N.lang('en');
 nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
 ```
 
+Данная технология принимает на вход результаты полученные при выполнении [i18n-merge-keysets](#i18n-merge-keysets),
+следовательно для ее работы необходима предварительная сборка `*.keysets.lang.js` файлов при
+помощи технологии [i18n-merge-keysets](#i18n-merge-keysets).
+
+С помощью данной технологии осуществляется экспорт структуры данных локализации, полученной в результате работы
+[i18n-merge-keysets](#i18n-merge-keysets) в xml-файл `*.keysets.<язык>.xml`.
+
+Допустим, что технология `i18n-merge-keysets` сгенерировала `*.keysets.en.js` файл:
+
+```
+module.exports = {
+ "block1": {
+     "foo11": "bar11",
+     "foo12": "bar12"
+ },
+ "block2": {
+     "foo21": "bar21"
+ }
+};
+```
+
+Результатом работы технологии `i18n-keysets-xml` для языка `en` станет файл `*.keysets.en.xml` с содержимым:
+```
+<?xml version="1.0" encoding="utf-8"?>
+    <tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:i18n="urn:yandex-functions:internationalization">
+    <keyset id="block1">
+        <key id="foo1">
+            <value>bar11</value>
+        </key>
+        <key id="foo2">
+            <value>bar12</value>
+        </key>
+    </keyset>
+    <keyset id="block2">
+        <key id="foo21">
+            <value>bar21</value>
+        </key>
+    </keyset>
+</tanker>
+```
+
+Тестирование
+----------
+
+Запуск тестов:
+```
+$ npm run unit
+```
+
+Запуск проверки js синтаксиса:
+```
+$ npm run lint
+```
+
+Запуск тестов с вычислением покрытия кода тестами:
+```
+$ npm run cover
+```
+
+Последовательная проверка синтаксиса и запуск тестов:
+```
+$ npm test
+```
 
 Лицензия
 --------
