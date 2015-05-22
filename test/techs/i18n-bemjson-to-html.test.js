@@ -32,8 +32,8 @@ describe('i18n-bemjson-to-html', function () {
             };
 
             scheme.bundle['bundle.' + template + '.js'] = {
-                'bemhtml': 'exports.BEMHTML.apply',
-                'bh': 'exports.apply'
+                bemhtml: 'exports.BEMHTML.apply',
+                bh: 'exports.apply'
             }[template] + ' = function(bemjson) { return "<html>" + BEM.I18N() + "</html>"; };';
 
             mock(scheme);
@@ -66,7 +66,8 @@ describe('i18n-bemjson-to-html', function () {
                 blocks: {},
                 bundle: {
                     'bundle.bemjson.js': '({ block: "block" })',
-                    'bundle.template.js': 'exports.apply = function(bemjson) { return "<html>" +bemjson.block+ "</html>"; };',
+                    'bundle.template.js':
+                        'exports.apply = function(bemjson) { return "<html>" +bemjson.block+ "</html>"; };',
                     'bundle.lang.all.js': i18n,
                     'bundle.lang.ru.js': ''
                 }
