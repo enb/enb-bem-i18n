@@ -20,6 +20,7 @@ npm install --save-dev enb-bem-i18n
 * [i18n-keysets-xml](#i18n-keysets-xml)
 * [i18n-lang-js](#i18n-lang-js)
 * [i18n-merge-keysets](#i18n-merge-keysets)
+* [i18n-bemjson-to-html](#i18n-bemjson-to-html)
 
 ### i18n-lang-js
 
@@ -77,6 +78,23 @@ nodeConfig.addTechs([
 nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
 ```
 
+### i18n-bemjson-to-html
+
+Собирает *html*-файл с помощью *bemjson*, *BH* или *BEMHTML*, *lang.all* и *lang.{lang}*.
+
+**Опции**
+
+* *String* **bhFile** — Исходный BH-файл. По умолчанию — `?.bh.js`.
+* *String* **bemjsonFile** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
+* *String* **langAllFile** — Исходный langAll-файл. По умолчанию — `?.lang.all.js`.
+* *String* **langFile** — Исходный lang-файл. По умолчанию — `?.lang.{lang}.js`. Если параметр lang не указан, берется первый из объявленных в проекте языков
+* *String* **target** — Результирующий HTML-файл. По умолчанию — `?.{lang}.html`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(require('enb-bh/techs/i18n-bemjson-to-html'));
+```
 
 Лицензия
 --------
