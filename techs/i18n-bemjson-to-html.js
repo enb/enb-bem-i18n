@@ -33,11 +33,6 @@ module.exports = require('enb/lib/build-flow').create()
     .useSourceFilename('bemjsonFile', '?.bemjson.js')
     .useSourceFilename('langAllFile', '?.lang.all.js')
     .useSourceFilename('langFile', '?.lang.{lang}.js')
-    .optionAlias('templateFile', 'templateTarget')
-    .optionAlias('bemjsonFile', 'bemjsonTarget')
-    .optionAlias('langAllFile', 'langAllTarget')
-    .optionAlias('langFile', 'langTarget')
-    .optionAlias('target', 'destTarget')
     .needRebuild(function (cache) {
         return cache.needRebuildFile('template-file', this.node.resolvePath(this._templateFile)) ||
             cache.needRebuildFile('bemjson-file', this.node.resolvePath(this._bemjsonFile)) ||
