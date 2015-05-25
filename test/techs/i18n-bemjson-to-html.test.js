@@ -21,7 +21,7 @@ describe('i18n-bemjson-to-html', function () {
     });
 
     describe('must generate html with i18n', function () {
-        function testForTemplate(template) {
+        function testForTemplate(template, templateName) {
             var scheme = {
                 blocks: {},
                 bundle: {
@@ -31,32 +31,39 @@ describe('i18n-bemjson-to-html', function () {
                 }
             };
 
-            scheme.bundle['bundle.' + template + '.js'] = {
-                bemhtml: 'exports.BEMHTML.apply',
-                bh: 'exports.apply'
-            }[template] + ' = function(bemjson) { return "<html>" + BEM.I18N() + "</html>"; };';
+            scheme.bundle['bundle.' + (templateName || 'template') + '.js'] = template;
 
             mock(scheme);
 
             bundle = new TestNode('bundle');
 
             return bundle.runTechAndGetContent(
-                Tech, { templateFile: '?.' + template + '.js', lang: 'ru' }
+                Tech, { templateFile: '?.' + (templateName || 'template') + '.js', lang: 'ru' }
             ).spread(function (html) {
                 return html.toString();
             });
         }
 
         it('must generate valid html for bemhtml template', function () {
-            testForTemplate('bemhtml').then(function (html) {
-                html.must.be('<html>i18n-key</html>');
-            });
+            testForTemplate('exports.BEMHTML.apply = function(bemjson) { return "<html>" + BEM.I18N() + "</html>"; };')
+                .then(function (html) {
+                    html.must.be('<html>i18n-key</html>');
+                });
         });
 
         it('must generate valid html for bh template', function () {
-            testForTemplate('bh').then(function (html) {
-                html.must.be('<html>i18n-key</html>');
-            });
+            testForTemplate('exports.apply = function(bemjson) { return "<html>" + BEM.I18N() + "</html>"; };')
+                .then(function (html) {
+                    html.must.be('<html>i18n-key</html>');
+                });
+        });
+
+        it('must use valid template file', function () {
+            var template = 'exports.apply = function(bemjson) { return "<html>" + BEM.I18N() + "</html>"; };';
+            testForTemplate(template, 'bh')
+                .then(function (html) {
+                    html.must.be('<html>i18n-key</html>');
+                });
         });
     });
 
