@@ -84,7 +84,7 @@ nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
 
 **Опции**
 
-* *String* **bhFile** — Исходный BH-файл. По умолчанию — `?.bh.js`.
+* *String* **templateFile** — Исходный файл шаблона. По умолчанию — `?.bh.js`.
 * *String* **bemjsonFile** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
 * *String* **langAllFile** — Исходный langAll-файл. По умолчанию — `?.lang.all.js`.
 * *String* **langFile** — Исходный lang-файл. По умолчанию — `?.lang.{lang}.js`. Если параметр lang не указан, берется первый из объявленных в проекте языков
