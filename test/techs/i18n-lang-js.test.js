@@ -104,7 +104,6 @@ describe('i18n-lang-js', function () {
     });
 
     describe('deprecated', function () {
-
         it('must get valid *.lang from *.keyset file', function () {
             var keysets = [
                     {
@@ -143,12 +142,11 @@ describe('i18n-lang-js', function () {
                 });
         });
 
-
         it('must get valid *.lang from empty *.keyset file (only core)', function () {
             var keysets = [
                     {
                         'lang.js': {
-                            'all': { '': 'core' }
+                            all: { '': 'core' }
                         }
                     }
                 ],

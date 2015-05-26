@@ -9,7 +9,9 @@ module.exports = function() {
      * @returns {String}
      */
     function i18n(keyset, key, params) {
-        if(!data) throw Error('i18n need to be filled with data');
+        if(!data) {
+            throw Error('i18n need to be filled with data');
+        }
         var val = data[keyset] && data[keyset][key];
         return typeof val === 'undefined'?
         keyset + ':' + key :
@@ -28,8 +30,9 @@ module.exports = function() {
             var dataKs = data[ks] || (data[ks] = {}),
                 i18nDataKs = i18nData[ks];
 
-            for(var k in i18nDataKs)
-                dataKs[k] = i18nDataKs[k];
+            for(var k in i18nDataKs) {
+                dataKs[ k ] = i18nDataKs[ k ];
+            }
         }
 
         return this;

@@ -128,7 +128,7 @@ module.exports = require('enb/lib/build-flow').create()
             return 'if (typeof BEM !== \'undefined\' && BEM.I18N) {';
         },
         getAppendJs: function (lang) {
-            return [ '', '', 'BEM.I18N.lang(\'' + lang + '\');', '', '}', '' ].join(EOL);
+            return ['', '', 'BEM.I18N.lang(\'' + lang + '\');', '', '}', ''].join(EOL);
         },
         getKeysetBuildResult: function (keysetName, keyset, lang) {
             var res = [];
