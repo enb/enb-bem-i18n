@@ -73,6 +73,8 @@ module.exports = require('enb/lib/build-flow.js').create()
                         }
                     });
                 });
+
+                return promise;
             }))
             .then(function () {
                 return 'module.exports = ' + JSON.stringify(result) + ';';
