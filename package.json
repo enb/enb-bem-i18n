@@ -34,14 +34,14 @@
   },
   "dependencies": {
     "dom-js": "0.0.9",
-    "vow": "0.4.8"
+    "vow": "0.4.9"
   },
   "devDependencies": {
     "enb": ">= 0.11.0 < 1.0.0",
     "istanbul": "0.3.14",
     "jscs": "1.13.1",
     "jshint": "2.7.0",
-    "mocha": "2.2.4",
+    "mocha": "2.2.5",
     "mock-fs": "2.7.0",
     "must": "0.12.0"
   },
