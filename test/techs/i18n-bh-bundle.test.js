@@ -1,12 +1,16 @@
 var path = require('path'),
+    fs = require('fs'),
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
     TestNode = require('enb/lib/test/mocks/test-node'),
+    FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    Tech = require('../../techs/i18n-lang-js'),
-    core = require('../fixtures/core.js');
+    Tech = require('../../techs/i18n-bh-bundle'),
+    core = require('../fixtures/core.js'),
+    bhCoreFilename = require.resolve('enb-bh/node_modules/bh/lib/bh.js'),
+    bhCoreContents = fs.readFileSync(bhCoreFilename);
 
-describe('i18n-lang-js', function () {
+describe('bh-bundle-i18n', function () {
     afterEach(function () {
         mock.restore();
     });
@@ -46,8 +50,11 @@ describe('i18n-lang-js', function () {
         };
 
         return build(keysets)
-            .then(function (i18n) {
-                i18n('scope', 'key').must.be('val');
+            .then(function (BH) {
+                var bemjson = { block: 'block', scope: 'scope', key: 'key' },
+                    html = BH.apply(bemjson);
+
+                html.must.be('<div class=\"block\">val</div>');
             });
     });
 
@@ -59,8 +66,11 @@ describe('i18n-lang-js', function () {
         };
 
         return build(keysets)
-            .then(function (i18n) {
-                i18n('scope', 'key').must.be('scope:key');
+            .then(function (BH) {
+                var bemjson = { block: 'block', scope: 'scope', key: 'key' },
+                    html = BH.apply(bemjson);
+
+                html.must.be('<div class=\"block\">scope:key</div>');
             });
     });
 
@@ -77,8 +87,11 @@ describe('i18n-lang-js', function () {
         };
 
         return build(keysets)
-            .then(function (i18n) {
-                i18n('scope', 'key', ['p1', 'p2']).must.be('p1,p2');
+            .then(function (BH) {
+                var bemjson = { block: 'block', scope: 'scope', key: 'key', params: ['p1', 'p2'] },
+                    html = BH.apply(bemjson);
+
+                html.must.be('<div class=\"block\">p1,p2</div>');
             });
     });
 
@@ -98,97 +111,17 @@ describe('i18n-lang-js', function () {
         };
 
         return build(keysets)
-            .then(function (i18n) {
-                i18n('scope-2', 'key', { scope: 'scope-1', key: 'key' }).must.be('val');
+            .then(function (BH) {
+                var bemjson = {
+                        block: 'block',
+                        scope: 'scope-1',
+                        key: 'key',
+                        params: { scope: 'scope-1', key: 'key' }
+                    },
+                    html = BH.apply(bemjson);
+
+                html.must.be('<div class=\"block\">val</div>');
             });
-    });
-
-    describe('deprecated', function () {
-        it('must get valid *.lang from *.keyset file', function () {
-            var keysets = [
-                    {
-                        'lang.js': {
-                            all: { '': 'core' },
-                            scope1: { key11: 'val11', key12: 'val12' },
-                            scope2: { key21: 'val21' }
-                        }
-                    }
-                ],
-                expected = [
-                    'core',
-                    '',
-                    'if (typeof BEM !== \'undefined\' && BEM.I18N) {BEM.I18N.decl(\'scope1\', {',
-                    '    "key11": \'val11\',',
-                    '    "key12": \'val12\'',
-                    '}, {',
-                    '"lang": "lang"',
-                    '});',
-                    '',
-                    'BEM.I18N.decl(\'scope2\', {',
-                    '    "key21": \'val21\'',
-                    '}, {',
-                    '"lang": "lang"',
-                    '});',
-                    '',
-                    'BEM.I18N.lang(\'lang\');',
-                    '',
-                    '}',
-                    ''
-                ].join('\n');
-
-            return buildDeprecated(keysets, 'lang')
-                .then(function (res) {
-                    res.must.eql(expected);
-                });
-        });
-
-        it('must get valid *.lang from empty *.keyset file (only core)', function () {
-            var keysets = [
-                    {
-                        'lang.js': {
-                            all: { '': 'core' }
-                        }
-                    }
-                ],
-                expected = [
-                    'core',
-                    '',
-                    'if (typeof BEM !== \'undefined\' && BEM.I18N) {',
-                    '',
-                    'BEM.I18N.lang(\'lang\');',
-                    '',
-                    '}',
-                    ''
-                ].join('\n');
-
-            return buildDeprecated(keysets, 'lang')
-                .then(function (res) {
-                    res.must.eql(expected);
-                });
-        });
-
-        function buildDeprecated(keysets, lang) {
-            var fsScheme = {
-                bundle: {}
-            };
-
-            for (var i = 0; i < keysets.length; ++i) {
-                var keyset = keysets[i],
-                    basename = Object.keys(keyset)[0],
-                    data = keyset[basename];
-
-                fsScheme.bundle['bundle.keysets.' + basename] = 'module.exports = ' + JSON.stringify(data) + ';';
-            }
-
-            mock(fsScheme);
-
-            var bundle = new TestNode('bundle');
-
-            return bundle.runTechAndGetContent(Tech, { lang: lang })
-                .spread(function (res) {
-                    return res.toString();
-                });
-        }
     });
 
     describe('cache', function () {
@@ -208,7 +141,7 @@ describe('i18n-lang-js', function () {
             });
 
             var bundle = new TestNode('bundle'),
-                cache = bundle.getNodeCache('bundle.lang.lang.js'),
+                cache = bundle.getNodeCache('bundle.bh.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
 
@@ -216,7 +149,15 @@ describe('i18n-lang-js', function () {
             require(filename);
             cache.cacheFileInfo('keysets-file-' + basename, filename);
 
-            mock({
+            var scheme = {
+                blocks: {
+                    'block.bh.js': [
+                        'bh.match("block", function (ctx, json) {',
+                        '    var val = bh.lib.i18n(json.scope, json.key, json.params);',
+                        '    ctx.content(val)',
+                        '});'
+                    ].join('\n')
+                },
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
@@ -226,11 +167,28 @@ describe('i18n-lang-js', function () {
                         mtime: time
                     })
                 }
-            });
+            };
+
+            scheme[bhCoreFilename] = bhCoreContents;
+
+            mock(scheme);
+
+            var fileList = new FileList();
+
+            fileList.loadFromDirSync('blocks');
+
+            bundle.provideTechData('?.files', fileList);
 
             return bundle.runTechAndRequire(Tech, { lang: 'lang' })
-                .spread(function (i18n) {
-                    i18n('scope', 'key').must.be('val');
+                .spread(function (BH) {
+                    var bemjson = {
+                            block: 'block',
+                            scope: 'scope',
+                            key: 'key'
+                        },
+                        html = BH.apply(bemjson);
+
+                    html.must.be('<div class=\"block\">val</div>');
                 });
         });
 
@@ -248,7 +206,7 @@ describe('i18n-lang-js', function () {
             });
 
             var bundle = new TestNode('bundle'),
-                cache = bundle.getNodeCache('bundle.lang.lang.js'),
+                cache = bundle.getNodeCache('bundle.bh.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
 
@@ -256,7 +214,15 @@ describe('i18n-lang-js', function () {
             require(filename);
             cache.cacheFileInfo('keysets-file-' + basename, filename);
 
-            mock({
+            var scheme = {
+                blocks: {
+                    'block.bh.js': [
+                        'bh.match("block", function (ctx, json) {',
+                        '    var val = bh.lib.i18n(json.scope, json.key, json.params);',
+                        '    ctx.content(val)',
+                        '});'
+                    ].join('\n')
+                },
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
@@ -266,24 +232,58 @@ describe('i18n-lang-js', function () {
                         mtime: new Date(2)
                     })
                 }
-            });
+            };
+
+            scheme[bhCoreFilename] = bhCoreContents;
+
+            mock(scheme);
+
+            var fileList = new FileList();
+
+            fileList.loadFromDirSync('blocks');
+
+            bundle.provideTechData('?.files', fileList);
 
             return bundle.runTechAndRequire(Tech, { lang: 'lang' })
-                .spread(function (i18n) {
-                    i18n('scope', 'key').must.be('val2');
+                .spread(function (BH) {
+                    var bemjson = {
+                            block: 'block',
+                            scope: 'scope',
+                            key: 'key'
+                        },
+                        html = BH.apply(bemjson);
+
+                    html.must.be('<div class=\"block\">val2</div>');
                 });
         });
     });
 });
 
 function build(keysets) {
-    mock({
+    var scheme = {
+        blocks: {
+            'block.bh.js': [
+                'bh.match("block", function (ctx, json) {',
+                '    var val = bh.lib.i18n(json.scope, json.key, json.params);',
+                '    ctx.content(val)',
+                '});'
+            ].join('\n')
+        },
         bundle: {
             'bundle.keysets.lang.js': serialize(keysets)
         }
-    });
+    };
 
-    var bundle = new TestNode('bundle');
+    scheme[bhCoreFilename] = bhCoreContents;
+
+    mock(scheme);
+
+    var bundle = new TestNode('bundle'),
+        fileList = new FileList();
+
+    fileList.loadFromDirSync('blocks');
+
+    bundle.provideTechData('?.files', fileList);
 
     return bundle.runTechAndRequire(Tech, { lang: 'lang' })
         .spread(function (i18n) {

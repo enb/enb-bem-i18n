@@ -1,6 +1,8 @@
 var fs = require('fs'),
     path = require('path'),
-    mockFs = require('mock-fs'),
+    inspect = require('util').inspect,
+    mock = require('mock-fs'),
+    serializeJS = require('serialize-javascript'),
     TestNode = require('enb/lib/test/mocks/test-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
@@ -8,174 +10,409 @@ var fs = require('fs'),
 
 describe('i18n-merge-keysets', function () {
     afterEach(function () {
-        mockFs.restore();
+        mock.restore();
     });
 
-    it('must get keyset from lang file', function () {
-        var keysets = [
-                {
-                    'lang.js': {
-                        scope: {
-                            key: 'val'
-                        }
-                    }
-                }
-            ],
-            expected = {
-                scope: {
-                    key: 'val'
-                }
-            };
+    describe('`i18n` dirs', function () {
+        it('must get empty keyset if empty dir', function () {
+            var keysets = {
+                    'block.i18n': {}
+                },
+                expected = {};
 
-        return build(keysets, 'lang')
-            .then(function (res) {
-                res.must.eql(expected);
-            });
-    });
+            return assert(keysets, expected, { lang: 'lang' });
+        });
 
-    it('must get keyset by lang', function () {
-        var keysets = [
-                {
-                    'ru.js': {
-                        'ru-scope': {
-                            key: 'val'
-                        }
-                    },
-                    'en.js': {
-                        'ru-scope': {
-                            key: 'val'
-                        }
-                    }
-                }
-            ],
-            expected = {
-                'ru-scope': {
-                    key: 'val'
-                }
-            };
-
-        return build(keysets, 'ru')
-            .then(function (res) {
-                res.must.eql(expected);
-            });
-    });
-
-    it('must override value', function () {
-        var keysets = [
-                {
-                    'lang.js': {
-                        scope: {
-                            key: 'val'
-                        }
+        it('must get empty keyset if lang file', function () {
+            var keysets = {
+                    'block.i18n': {
+                        'lang.js': ''
                     }
                 },
-                {
-                    'lang.js': {
+                expected = {};
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must get keyset', function () {
+            var keysets = {
+                    'block.i18n': {
+                        'lang.js': serialize({
+                            scope: {
+                                key: 'val'
+                            }
+                        })
+                    }
+                },
+                expected = {
+                    scope: {
+                        key: 'val'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must get keyset by lang', function () {
+            var keysets = {
+                    'block.i18n': {
+                        'ru.js': serialize({
+                            'ru-scope': {
+                                key: 'ru'
+                            }
+                        }),
+                        'en.js': serialize({
+                            'ru-scope': {
+                                key: 'en'
+                            }
+                        })
+                    }
+                },
+                expected = {
+                    'ru-scope': {
+                        key: 'ru'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'ru' });
+        });
+
+        it('must support function', function () {
+            var keysets = {
+                    'block.i18n': {
+                        'lang.js': serialize({
+                            scope: {
+                                key: function () { return '^_^'; }
+                            }
+                        })
+                    }
+                },
+                expected = {
+                    scope: {
+                        key: function () { return '^_^'; }
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        describe('merge', function () {
+            it('must override value', function () {
+                var keysets = {
+                        'block-1.i18n': {
+                            'lang.js': serialize({
+                                scope: {
+                                    key: 'val'
+                                }
+                            })
+                        },
+                        'block-2.i18n': {
+                            'lang.js': serialize({
+                                scope: {
+                                    key: 'val-2'
+                                }
+                            })
+                        }
+                    },
+                    expected = {
                         scope: {
                             key: 'val-2'
                         }
-                    }
-                }
-            ],
-            expected = {
-                scope: {
-                    key: 'val-2'
-                }
-            };
+                    };
 
-        return build(keysets, 'lang')
-            .then(function (res) {
-                res.must.eql(expected);
+                return assert(keysets, expected, { lang: 'lang' });
             });
-    });
 
-    it('must merge keys', function () {
-        var keysets = [
-                {
-                    'lang.js': {
-                        scope: {
-                            'key-1': 'val'
+            it('must merge keys', function () {
+                var keysets = {
+                        'block-1.i18n': {
+                            'lang.js': serialize({
+                                scope: {
+                                    'key-1': 'val'
+                                }
+                            })
+                        },
+                        'block-2.i18n': {
+                            'lang.js': serialize({
+                                scope: {
+                                    'key-2': 'val'
+                                }
+                            })
                         }
-                    }
-                },
-                {
-                    'lang.js': {
+                    },
+                    expected = {
                         scope: {
+                            'key-1': 'val',
                             'key-2': 'val'
                         }
-                    }
-                }
-            ],
-            expected = {
-                scope: {
-                    'key-1': 'val',
-                    'key-2': 'val'
-                }
-            };
+                    };
 
-        return build(keysets, 'lang')
-            .then(function (res) {
-                res.must.eql(expected);
+                return assert(keysets, expected, { lang: 'lang' });
             });
-    });
 
-    it('must merge scopes', function () {
-        var keysets = [
-                {
-                    'lang.js': {
+            it('must merge scopes', function () {
+                var keysets = {
+                        'block-1.i18n': {
+                            'lang.js': serialize({
+                                'scope-1': {
+                                    key: 'val-1'
+                                }
+                            })
+                        },
+                        'block-2.i18n': {
+                            'lang.js': serialize({
+                                'scope-2': {
+                                    key: 'val-2'
+                                }
+                            })
+                        }
+                    },
+                    expected = {
                         'scope-1': {
                             key: 'val-1'
-                        }
-                    }
-                },
-                {
-                    'lang.js': {
+                        },
                         'scope-2': {
                             key: 'val-2'
                         }
-                    }
-                }
-            ],
-            expected = {
-                'scope-1': {
-                    key: 'val-1'
-                },
-                'scope-2': {
-                    key: 'val-2'
-                }
-            };
+                    };
 
-        return build(keysets, 'lang')
-            .then(function (res) {
-                res.must.eql(expected);
+                return assert(keysets, expected, { lang: 'lang' });
             });
+        });
     });
 
-    it('must provide core', function () {
-        var keysets = [
-                {
-                    'all.js': {
+    describe('`i18n.js` files', function () {
+        it('must get empty keyset if empty lang file', function () {
+            var keysets = {
+                    'block.i18n.js': ''
+                },
+                expected = {};
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must get keyset', function () {
+            var keysets = {
+                    'block.i18n.js': serialize({
+                        scope: {
+                            key: 'val'
+                        }
+                    })
+                },
+                expected = {
+                    scope: {
+                        key: 'val'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        describe('merge', function () {
+            it('must override value', function () {
+                var keysets = {
+                        'block-1.i18n.js': serialize({
+                            scope: {
+                                key: 'val'
+                            }
+                        }),
+                        'block-2.i18n.js': serialize({
+                            scope: {
+                                key: 'val-2'
+                            }
+                        })
+                    },
+                    expected = {
+                        scope: {
+                            key: 'val-2'
+                        }
+                    };
+
+                return assert(keysets, expected, { lang: 'lang' });
+            });
+
+            it('must merge keys', function () {
+                var keysets = {
+                        'block-1.i18n.js': serialize({
+                            scope: {
+                                'key-1': 'val'
+                            }
+                        }),
+                        'block-2.i18n.js': serialize({
+                            scope: {
+                                'key-2': 'val'
+                            }
+                        })
+                    },
+                    expected = {
+                        scope: {
+                            'key-1': 'val',
+                            'key-2': 'val'
+                        }
+                    };
+
+                return assert(keysets, expected, { lang: 'lang' });
+            });
+
+            it('must merge scopes', function () {
+                var keysets = {
+                        'block-1.i18n.js': serialize({
+                            'scope-1': {
+                                key: 'val-1'
+                            }
+                        }),
+                        'block-2.i18n.js': serialize({
+                            'scope-2': {
+                                key: 'val-2'
+                            }
+                        })
+                    },
+                    expected = {
+                        'scope-1': {
+                            key: 'val-1'
+                        },
+                        'scope-2': {
+                            key: 'val-2'
+                        }
+                    };
+
+                return assert(keysets, expected, { lang: 'lang' });
+            });
+        });
+    });
+
+    describe('`i18n.js` files + `i18n` dirs', function () {
+        it('must add common scope', function () {
+            var keysets = {
+                    'block.i18n.js': serialize({
+                        'common-scope': {
+                            key: 'val'
+                        }
+                    }),
+                    'block.i18n': {
+                        'lang.js': serialize({
+                            'lang-scope': {
+                                key: 'val'
+                            }
+                        })
+                    }
+                },
+                expected = {
+                    'common-scope': {
+                        key: 'val'
+                    },
+                    'lang-scope': {
+                        key: 'val'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must override value', function () {
+            var keysets = {
+                    'block.i18n.js': serialize({
+                        scope: {
+                            key: 'val'
+                        }
+                    }),
+                    'block.i18n': {
+                        'lang.js': serialize({
+                            scope: {
+                                key: 'val-2'
+                            }
+                        })
+                    }
+                },
+                expected = {
+                    scope: {
+                        key: 'val-2'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must merge keys', function () {
+            var keysets = {
+                    'block.i18n': {
+                        'lang.js': serialize({
+                            scope: {
+                                'key-1': 'val'
+                            }
+                        })
+                    },
+                    'block.i18n.js':  serialize({
+                        scope: {
+                            'key-2': 'val'
+                        }
+                    })
+                },
+                expected = {
+                    scope: {
+                        'key-1': 'val',
+                        'key-2': 'val'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must merge scopes', function () {
+            var keysets = {
+                    'block.i18n': {
+                        'lang.js': serialize({
+                            'scope-1': {
+                                key: 'val-1'
+                            }
+                        })
+                    },
+                    'block.i18n.js': serialize({
+                        'scope-2': {
+                            key: 'val-2'
+                        }
+                    })
+                },
+                expected = {
+                    'scope-1': {
+                        key: 'val-1'
+                    },
+                    'scope-2': {
+                        key: 'val-2'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+    });
+
+    it('must provide old core', function () {
+        var keysets = {
+                'block.i18n': {
+                    'all.js': serialize({
                         all: {
                             '': 'core'
                         }
-                    }
+                    })
                 }
-            ];
+            },
+            expected = {
+                all: {
+                    '': 'core'
+                }
+            };
 
-        return build(keysets, 'all')
-            .then(function (res) {
-                res[''].must.be('core');
-            });
+        return assert(keysets, expected, { lang: 'lang' });
     });
 
     describe('cache', function () {
-        it('must get keyset from cache', function () {
+        it('must get keysets from cache', function () {
             var time = new Date(1);
 
-            mockFs({
-                'block.i18n': {
-                    'lang.js': mockFs.file({
-                        content: 'module.exports = { scope: { key: "val" } };',
+            mock({
+                blocks: {
+                    'block.i18n.js': mock.file({
+                        content: serialize({ scope: { key: 'val' } }),
                         mtime: time
                     })
                 },
@@ -184,24 +421,25 @@ describe('i18n-merge-keysets', function () {
 
             var bundle = new TestNode('bundle'),
                 cache = bundle.getNodeCache('bundle.keysets.lang.js'),
+                dirname = path.resolve('blocks'),
+                basename = 'block.i18n.js',
+                filename = path.join(dirname, basename),
                 fileList = new FileList(),
-                dirname = path.resolve('block.i18n'),
-                filename = path.join(dirname, 'lang.js'),
-                info = FileList.getFileInfo(dirname);
+                dirList = new FileList();
 
-            info.files = [FileList.getFileInfo(filename)];
-            fileList.addFiles([info]);
+            fileList.loadFromDirSync(dirname);
 
-            bundle.provideTechData('?.dirs', fileList);
+            bundle.provideTechData('?.files', fileList);
+            bundle.provideTechData('?.dirs', dirList);
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keyset-file-lang.js', filename);
+            cache.cacheFileInfo('keyset-file-' + basename, filename);
 
-            mockFs({
-                'block.i18n': {
-                    'lang.js': mockFs.file({
-                        content: 'module.exports = { scope: { key: "val2" } };',
+            mock({
+                blocks: {
+                    'block.i18n.js': mock.file({
+                        content: serialize({ scope: { key: 'val2' } }),
                         mtime: time
                     })
                 },
@@ -215,11 +453,13 @@ describe('i18n-merge-keysets', function () {
         });
 
         it('must ignore outdated cache', function () {
-            mockFs({
-                'block.i18n': {
-                    'lang.js': mockFs.file({
-                        content: 'module.exports = { scope: { key: "val" } };',
-                        mtime: new Date(1)
+            var time = new Date(1);
+
+            mock({
+                blocks: {
+                    'block.i18n.js': mock.file({
+                        content: serialize({ scope: { key: 'val' } }),
+                        mtime: time
                     })
                 },
                 bundle: {}
@@ -227,24 +467,25 @@ describe('i18n-merge-keysets', function () {
 
             var bundle = new TestNode('bundle'),
                 cache = bundle.getNodeCache('bundle.keysets.lang.js'),
+                dirname = path.resolve('blocks'),
+                basename = 'block.i18n.js',
+                filename = path.join(dirname, basename),
                 fileList = new FileList(),
-                dirname = path.resolve('block.i18n'),
-                filename = path.join(dirname, 'lang.js'),
-                info = FileList.getFileInfo(dirname);
+                dirList = new FileList();
 
-            info.files = [FileList.getFileInfo(filename)];
-            fileList.addFiles([info]);
+            fileList.loadFromDirSync(dirname);
 
-            bundle.provideTechData('?.dirs', fileList);
+            bundle.provideTechData('?.files', fileList);
+            bundle.provideTechData('?.dirs', dirList);
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keyset-file-lang.js', filename);
+            cache.cacheFileInfo('keyset-file-' + basename, filename);
 
-            mockFs({
-                'block.i18n': {
-                    'lang.js': mockFs.file({
-                        content: 'module.exports = { scope: { key: "val2" } };',
+            mock({
+                blocks: {
+                    'block.i18n.js': mock.file({
+                        content: serialize({ scope: { key: 'val2' } }),
                         mtime: new Date(2)
                     })
                 },
@@ -259,28 +500,33 @@ describe('i18n-merge-keysets', function () {
     });
 });
 
-function build(keysets, lang) {
-    var fsScheme = {
+function assert(keysets, expected, opts) {
+    opts || (opts = {});
+
+    var scheme = {
+        blocks: keysets,
         bundle: {}
     };
 
-    for (var i = 0; i < keysets.length; ++i) {
-        var keyset = keysets[i],
-            basename = Object.keys(keyset)[0],
-            data = keyset[basename],
-            file = {};
+    mock(scheme);
 
-        file[basename] = 'module.exports = ' + JSON.stringify(data) + ';';
-
-        fsScheme[i + '.i18n'] = file;
-    }
-
-    mockFs(fsScheme);
-
-    var bundle = new TestNode('bundle'),
+    var dirnames = Object.keys(keysets).filter(function (basename) {
+            return path.extname(basename) === '.i18n';
+        }),
+        filenames = Object.keys(keysets).filter(function (basename) {
+            return path.extname(basename) === '.js';
+        }),
+        bundle = new TestNode('bundle'),
         fileList = new FileList(),
-        dirs = keysets.map(function (keyset, i) {
-            var dirname = path.resolve(i + '.i18n'),
+        dirList = new FileList(),
+        root = 'blocks',
+        files = filenames.map(function (basename) {
+            var filename = path.resolve(root, basename);
+
+            return FileList.getFileInfo(filename);
+        }),
+        dirs = dirnames.map(function (basename) {
+            var dirname = path.resolve(root, basename),
                 info = FileList.getFileInfo(dirname);
 
             info.files = fs.readdirSync(dirname).map(function (basename) {
@@ -292,11 +538,24 @@ function build(keysets, lang) {
             return info;
         });
 
-    fileList.addFiles(dirs);
-    bundle.provideTechData('?.dirs', fileList);
+    dirList.addFiles(dirs);
+    fileList.addFiles(files);
 
-    return bundle.runTechAndRequire(Tech, { lang: lang })
+    bundle.provideTechData('?.files', fileList);
+    bundle.provideTechData('?.dirs', dirList);
+
+    return bundle.runTechAndRequire(Tech, { lang: opts.lang })
         .spread(function (res) {
-            return res;
+            if (inspect(expected).indexOf('[Function]') === -1) {
+                // Если ожидается JSON-объект, то сравниваем как объекты
+                res.must.eql(expected);
+            } else {
+                // Если ожидается JavaScript, то сравниваем как строки
+                serialize(res).must.eql(serialize(expected));
+            }
         });
+}
+
+function serialize(js) {
+    return 'module.exports = ' + serializeJS(js) + ';';
 }
