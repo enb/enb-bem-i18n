@@ -1,5 +1,5 @@
 /**
- * i18n-lang-js
+ * i18n-js
  * ============
  *
  * Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
@@ -15,8 +15,8 @@
  *
  * ```javascript
  * nodeConfig.addTechs([
- *   [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: 'all'} ],
- *   [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: '{lang}'} ],
+ *   [ require('enb-bem-i18n/techs/i18n-js'), { lang: 'all'} ],
+ *   [ require('enb-bem-i18n/techs/i18n-js'), { lang: '{lang}'} ],
  * ]);
  * ```
  */
