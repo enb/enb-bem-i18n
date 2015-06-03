@@ -23,11 +23,11 @@ npm install --save-dev enb-bem-i18n
 ----------
 
 * [i18n-keysets-xml](#i18n-keysets-xml)
-* [i18n-lang-js](#i18n-lang-js)
+* [i18n-js](#i18n-js)
 * [i18n-merge-keysets](#i18n-merge-keysets)
 * [i18n-bemjson-to-html](#i18n-bemjson-to-html)
 
-### i18n-lang-js
+### i18n-js
 
 Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
 
@@ -43,8 +43,8 @@ npm install --save-dev enb-bem-i18n
 
 ```javascript
 nodeConfig.addTechs([
-  [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: 'all'} ],
-  [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: '{lang}'} ]
+  [ require('enb-bem-i18n/techs/i18n-js'), { lang: 'all'} ],
+  [ require('enb-bem-i18n/techs/i18n-js'), { lang: '{lang}'} ]
 ]);
 ```
 
