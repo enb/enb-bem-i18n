@@ -124,7 +124,6 @@ describe('i18n-js', function () {
                 });
         });
 
-
         it('must get valid *.lang from empty *.keyset file (only core)', function () {
             var keysets = {
                 all: { '': corev1 }

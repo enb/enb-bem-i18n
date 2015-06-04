@@ -22,7 +22,6 @@
  */
 var EOL = require('os').EOL,
     path = require('path'),
-    tanker = require('../exlib/tanker'),
     asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     keysets = require('../lib/keysets'),
