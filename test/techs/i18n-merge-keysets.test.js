@@ -1,7 +1,7 @@
 var fs = require('fs'),
     path = require('path'),
     mockFs = require('mock-fs'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../techs/i18n-merge-keysets');
@@ -182,7 +182,7 @@ describe('i18n-merge-keysets', function () {
                 bundle: {}
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.keysets.lang.js'),
                 fileList = new FileList(),
                 dirname = path.resolve('block.i18n'),
@@ -225,7 +225,7 @@ describe('i18n-merge-keysets', function () {
                 bundle: {}
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.keysets.lang.js'),
                 fileList = new FileList(),
                 dirname = path.resolve('block.i18n'),
@@ -277,7 +277,7 @@ function build(keysets, lang) {
 
     mockFs(fsScheme);
 
-    var bundle = new TestNode('bundle'),
+    var bundle = new MockNode('bundle'),
         fileList = new FileList(),
         dirs = keysets.map(function (keyset, i) {
             var dirname = path.resolve(i + '.i18n'),
