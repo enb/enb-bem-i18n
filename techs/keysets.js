@@ -43,10 +43,10 @@ module.exports = require('enb/lib/build-flow.js').create()
                         return [langname, 'all.js'].indexOf(file.name) > -1;
                     })
                     .sort(function (a, b) {
-                        if(a.name.match(/all/)) {
+                        if (a.name.match(/all/)) {
                             return -1;
                         }
-                        if(b.name.match(/all/)) {
+                        if (b.name.match(/all/)) {
                             return 1;
                         }
                         return 0;
