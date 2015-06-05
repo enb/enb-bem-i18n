@@ -420,10 +420,7 @@ describe('i18n-merge-keysets', function () {
             });
 
             var bundle = new TestNode('bundle'),
-                cache = bundle.getNodeCache('bundle.keysets.lang.js'),
                 dirname = path.resolve('blocks'),
-                basename = 'block.i18n.js',
-                filename = path.join(dirname, basename),
                 fileList = new FileList(),
                 dirList = new FileList();
 
@@ -432,21 +429,19 @@ describe('i18n-merge-keysets', function () {
             bundle.provideTechData('?.files', fileList);
             bundle.provideTechData('?.dirs', dirList);
 
-            dropRequireCache(require, filename);
-            require(filename);
-            cache.cacheFileInfo('keyset-file-' + basename, filename);
-
-            mock({
-                blocks: {
-                    'block.i18n.js': mock.file({
-                        content: serialize({ scope: { key: 'val2' } }),
-                        mtime: time
-                    })
-                },
-                bundle: {}
-            });
-
             return bundle.runTechAndRequire(Tech, { lang: 'lang' })
+                .spread(function () {
+                    mock({
+                        blocks: {
+                            'block.i18n.js': mock.file({
+                                content: serialize({ scope: { key: 'val2' } }),
+                                mtime: time
+                            })
+                        },
+                        bundle: {}
+                    });
+                    return bundle.runTechAndRequire(Tech, { lang: 'lang' });
+                })
                 .spread(function (res) {
                     res.must.eql({ scope: { key: 'val' } });
                 });

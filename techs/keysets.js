@@ -18,7 +18,9 @@
  * ```
  */
 
-var vow = require('vow'),
+var path = require('path'),
+    format = require('util').format,
+    vow = require('vow'),
     serialize = require('serialize-javascript'),
     asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache');
@@ -56,15 +58,21 @@ module.exports = require('enb/lib/build-flow.js').create()
         return vow.all(files.map(function (file) {
             var filename = file.fullname,
                 basename = file.name,
-                cacheKey = 'keyset-file-' + basename,
-                promise;
+                promise,
+                cacheKey = (function (f) {
+                    var chuncks = f.split(path.sep),
+                        l = chuncks.length,
+                        level = chuncks[l - 4],
+                        block = chuncks[l - 3],
+                        elem = chuncks[l - 2];
+                    return format('keyset-file-%s-%s__%s-%s', level, block, elem, basename);
+                })(filename);
 
             if (cache.needRebuildFile(cacheKey, filename)) {
                 dropRequireCache(require, filename);
                 promise = asyncRequire(filename)
                     .then(function (keysets) {
                         cache.cacheFileInfo(cacheKey, filename);
-
                         return keysets;
                     });
             } else {
