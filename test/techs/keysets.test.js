@@ -62,7 +62,7 @@ describe('i18n-merge-keysets', function () {
                             }
                         }),
                         'en.js': serialize({
-                            'ru-scope': {
+                            'en-scope': {
                                 key: 'en'
                             }
                         })

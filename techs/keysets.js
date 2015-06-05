@@ -42,6 +42,15 @@ module.exports = require('enb/lib/build-flow.js').create()
                     .filter(function (file) {
                         return [langname, 'all.js'].indexOf(file.name) > -1;
                     })
+                    .sort(function (a, b) {
+                        if(a.name.match(/all/)) {
+                            return -1;
+                        }
+                        if(b.name.match(/all/)) {
+                            return 1;
+                        }
+                        return 0;
+                    })
             );
 
         return vow.all(files.map(function (file) {
@@ -62,20 +71,20 @@ module.exports = require('enb/lib/build-flow.js').create()
                 promise = asyncRequire(filename);
             }
 
-            return promise.then(function (keysets) {
-                Object.keys(keysets).forEach(function (scope) {
-                    var keyset = keysets[scope];
+            return promise
+                .then(function (keysets) {
+                        Object.keys(keysets).forEach(function (scope) {
+                            var keyset = keysets[scope];
 
-                    result[scope] || (result[scope] = {});
-
-                    Object.keys(keyset).forEach(function (name) {
-                        result[scope][name] = keyset[name];
+                            result[scope] || (result[scope] = {});
+                            Object.keys(keyset).forEach(function (name) {
+                                result[scope][name] = keyset[name];
+                            });
+                        });
                     });
+                }))
+                .then(function () {
+                    return 'module.exports = ' + serialize(result) + ';';
                 });
-            });
-        }))
-            .then(function () {
-                return 'module.exports = ' + serialize(result) + ';';
-            });
     })
     .createTech();
