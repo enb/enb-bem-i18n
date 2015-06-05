@@ -1,5 +1,5 @@
 var mockFs = require('mock-fs'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     Tech = require('../../techs/i18n-lang-js');
 
 describe('i18n-lang-js', function () {
@@ -148,7 +148,7 @@ function build(keysets, lang) {
 
     mockFs(fsScheme);
 
-    var bundle = new TestNode('bundle');
+    var bundle = new MockNode('bundle');
 
     return bundle.runTechAndGetContent(Tech, { lang: lang })
         .spread(function (res) {
@@ -170,7 +170,7 @@ function buildWithCache(initial, modified, lang) {
 
     mockFs(buildScheme(initial));
 
-    var bundle = new TestNode('bundle');
+    var bundle = new MockNode('bundle');
 
     return bundle.runTechAndGetContent(Tech, { lang: lang })
         .then(function () {

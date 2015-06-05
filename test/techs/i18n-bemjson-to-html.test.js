@@ -1,5 +1,5 @@
 var mock = require('mock-fs'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     Tech = require('../../techs/i18n-bemjson-to-html'),
     writeFile = require('../lib/write-file');
 
@@ -35,7 +35,7 @@ describe('i18n-bemjson-to-html', function () {
 
             mock(scheme);
 
-            bundle = new TestNode('bundle');
+            bundle = new MockNode('bundle');
 
             return bundle.runTechAndGetContent(
                 Tech, { templateFile: '?.' + (templateName || 'template') + '.js', lang: 'ru' }
@@ -82,7 +82,7 @@ describe('i18n-bemjson-to-html', function () {
 
             mock(scheme);
 
-            bundle = new TestNode('bundle');
+            bundle = new MockNode('bundle');
 
             return bundle.runTech(
                 Tech, { templateFile: '?.template.js', lang: 'ru' }
@@ -113,7 +113,7 @@ describe('i18n-bemjson-to-html', function () {
 
             mock(scheme);
 
-            bundle = new TestNode('bundle');
+            bundle = new MockNode('bundle');
 
             return bundle.runTech(
                 Tech, { templateFile: '?.template.js', lang: 'ru' }
