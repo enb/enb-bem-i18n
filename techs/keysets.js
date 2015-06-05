@@ -44,11 +44,11 @@ module.exports = require('enb/lib/build-flow.js').create()
                     .filter(function (file) {
                         return [langname, 'all.js'].indexOf(file.name) > -1;
                     })
-                    .sort(function (a, b) {
-                        if (a.name.match(/all/)) {
+                    .sort(function (file1, file2) {
+                        if (file1.suffix === 'all.js') {
                             return -1;
                         }
-                        if (b.name.match(/all/)) {
+                        if (file2.suffix === 'all.js') {
                             return 1;
                         }
                         return 0;
