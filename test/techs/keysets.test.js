@@ -386,6 +386,160 @@ describe('i18n-merge-keysets', function () {
         });
     });
 
+    describe('`i18n.js` files + `i18n` dirs with *.all.js files', function () {
+        it('must add common scope', function () {
+            var keysets = {
+                    'block.i18n.js': serialize({
+                        'common-scope': {
+                            key: 'val'
+                        }
+                    }),
+                    'block.i18n': {
+                        'all.js': serialize({
+                            'lang-scope': {
+                                'key-1': 'val1'
+                            }
+                        }),
+                        'lang.js': serialize({
+                            'lang-scope': {
+                                'key-2': 'val2'
+                            }
+                        })
+                    }
+                },
+                expected = {
+                    'common-scope': {
+                        key: 'val'
+                    },
+                    'lang-scope': {
+                        'key-1': 'val1',
+                        'key-2': 'val2'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must override value by all.js file', function () {
+            var keysets = {
+                    'block.i18n.js': serialize({
+                        scope: {
+                            key: 'val'
+                        }
+                    }),
+                    'block.i18n': {
+                        'all.js': serialize({
+                            scope: {
+                                key: 'val-2'
+                            }
+                        })
+                    }
+                },
+                expected = {
+                    scope: {
+                        key: 'val-2'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must override value by lang.js file', function () {
+            var keysets = {
+                    'block.i18n.js': serialize({
+                        scope: {
+                            key: 'val'
+                        }
+                    }),
+                    'block.i18n': {
+                        'lang.js': serialize({
+                            scope: {
+                                key: 'val-3'
+                            }
+                        }),
+                        'all.js': serialize({
+                            scope: {
+                                key: 'val-2'
+                            }
+                        })
+                    }
+                },
+                expected = {
+                    scope: {
+                        key: 'val-3'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must merge keys', function () {
+            var keysets = {
+                    'block.i18n': {
+                        'all.js': serialize({
+                            scope: {
+                                'key-all': 'val'
+                            }
+                        }),
+                        'lang.js': serialize({
+                            scope: {
+                                'key-1': 'val'
+                            }
+                        })
+                    },
+                    'block.i18n.js':  serialize({
+                        scope: {
+                            'key-2': 'val'
+                        }
+                    })
+                },
+                expected = {
+                    scope: {
+                        'key-all': 'val',
+                        'key-1': 'val',
+                        'key-2': 'val'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+
+        it('must merge scopes', function () {
+            var keysets = {
+                    'block.i18n': {
+                        'lang.js': serialize({
+                            'scope-1': {
+                                key: 'val-1'
+                            }
+                        }),
+                        'all.js': serialize({
+                            'scope-all': {
+                                key: 'val-all'
+                            }
+                        })
+                    },
+                    'block.i18n.js': serialize({
+                        'scope-2': {
+                            key: 'val-2'
+                        }
+                    })
+                },
+                expected = {
+                    'scope-1': {
+                        key: 'val-1'
+                    },
+                    'scope-all': {
+                        key: 'val-all'
+                    },
+                    'scope-2': {
+                        key: 'val-2'
+                    }
+                };
+
+            return assert(keysets, expected, { lang: 'lang' });
+        });
+    });
+
     it('must provide old core', function () {
         var keysets = {
                 'block.i18n': {
