@@ -1,0 +1,15 @@
+{
+    "name": "enb-bem-i18n",
+    "description": "Enb bem i18n package",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "bem-core": "2.6.0",
+        "bem-core-v3": "git://github.com/bem/bem-core.git#issues/576@v3"
+    },
+    "ignore": [
+        "coverage",
+        "node_modules",
+        "test"
+    ]
+}
