@@ -56,16 +56,11 @@ module.exports = require('enb/lib/build-flow.js').create()
             );
 
         return vow.all(files.map(function (file) {
-            var filename = file.fullname,
-                basename = file.name,
-                promise,
+            var promise,
+                filename = file.fullname,
                 cacheKey = (function (f) {
-                    var chuncks = f.split(path.sep),
-                        l = chuncks.length,
-                        level = chuncks[l - 4],
-                        block = chuncks[l - 3],
-                        elem = chuncks[l - 2];
-                    return format('keyset-file-%s-%s__%s-%s', level, block, elem, basename);
+                    var relative = path.relative(process.cwd(), f);
+                    return format('keyset-file-%s', relative);
                 })(filename);
 
             if (cache.needRebuildFile(cacheKey, filename)) {
