@@ -49,10 +49,11 @@
     "must": "0.12.0"
   },
   "scripts": {
-    "pretest": "bower i",
+    "deps": "bower i",
+    "pretest": "npm run deps",
     "test": "npm run lint && npm run unit",
     "lint": "jshint . && jscs -c .jscs.js .",
-    "unit": "mocha -R spec",
+    "unit": "npm run deps && mocha -R spec",
     "cover": "istanbul cover _mocha",
     "coveralls": "npm i coveralls && npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   }
