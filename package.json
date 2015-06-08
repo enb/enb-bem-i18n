@@ -50,7 +50,6 @@
   },
   "scripts": {
     "deps": "bower i",
-    "pretest": "npm run deps",
     "test": "npm run lint && npm run unit",
     "lint": "jshint . && jscs -c .jscs.js .",
     "unit": "npm run deps && mocha -R spec",
