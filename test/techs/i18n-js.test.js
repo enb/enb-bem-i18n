@@ -6,11 +6,12 @@ var fs = require('fs'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../techs/i18n-js'),
     corev1,
-    corev2 = require('../fixtures/core-v2.js');
+    corev2 = require('../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n;
 
 describe('i18n-js', function () {
     before(function () {
-        corev1 = fs.readFileSync(path.resolve('./test/fixtures/core-v1.js'), { encoding: 'utf-8' });
+        var p = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js';
+        corev1 = fs.readFileSync(path.resolve(p), { encoding: 'utf-8' });
     });
 
     afterEach(function () {
