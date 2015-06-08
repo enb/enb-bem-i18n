@@ -19,7 +19,6 @@
  */
 
 var path = require('path'),
-    format = require('util').format,
     vow = require('vow'),
     serialize = require('serialize-javascript'),
     asyncRequire = require('enb/lib/fs/async-require'),
@@ -58,10 +57,7 @@ module.exports = require('enb/lib/build-flow.js').create()
         return vow.all(files.map(function (file) {
             var promise,
                 filename = file.fullname,
-                cacheKey = (function (f) {
-                    var relative = path.relative(process.cwd(), f);
-                    return format('keyset-file-%s', relative);
-                })(filename);
+                cacheKey = 'keyset-file-' + path.relative(node.getRootDir(), filename);
 
             if (cache.needRebuildFile(cacheKey, filename)) {
                 dropRequireCache(require, filename);
