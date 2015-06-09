@@ -22,12 +22,12 @@ npm install --save-dev enb-bem-i18n
 Технологии
 ----------
 
+* [i18n-js](#i18n-js)
+* [keysets](#keysets)
 * [i18n-keysets-xml](#i18n-keysets-xml)
-* [i18n-lang-js](#i18n-lang-js)
-* [i18n-merge-keysets](#i18n-merge-keysets)
 * [i18n-bemjson-to-html](#i18n-bemjson-to-html)
 
-### i18n-lang-js
+### i18n-js
 
 Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
 
@@ -43,12 +43,12 @@ npm install --save-dev enb-bem-i18n
 
 ```javascript
 nodeConfig.addTechs([
-  [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: 'all'} ],
-  [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: '{lang}'} ]
+  [ require('enb-bem-i18n/techs/i18n-js'), { lang: 'all'} ],
+  [ require('enb-bem-i18n/techs/i18n-js'), { lang: '{lang}'} ]
 ]);
 ```
 
-### i18n-merge-keysets
+### keysets
 
 Собирает `?.keysets.<язык>.js`-файлы на основе `*.i18n`-папок для указанных языков.
 
@@ -61,8 +61,7 @@ nodeConfig.addTechs([
 
 ```javascript
 nodeConfig.addTechs([
-  [ require('enb-bem-i18n/techs/i18n-merge-keysets'), { lang: 'all' } ],
-  [ require('enb-bem-i18n/techs/i18n-merge-keysets'), { lang: '{lang}' } ]
+  [ require('enb-bem-i18n/techs/keysets'), { lang: '{lang}' } ]
 ]);
 ```
 
@@ -99,6 +98,33 @@ nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
 
 ```javascript
 nodeConfig.addTech(require('enb-bh/techs/i18n-bemjson-to-html'));
+```
+
+### bh-bundle-i18n
+
+Собирает *BH*-файлы по deps'ам в виде `?.bh.js` бандла на основе `?.keysets.<язык>.js`-файла.
+
+Предназначен для сборки как клиентского, так и серверного BH-кода. Предполагается, что в *BH*-файлах не используется `require`.
+
+Поддерживает CommonJS и YModules. Если в исполняемой среде нет ни одной модульной системы, то модуль будет предоставлен в глобальную переменную `bh`.
+
+**Опции**
+
+* *String* **target** — Результирующий таргет. По умолчанию — `?.bh.js`.
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
+* *String* **lang** — Язык, для которого небходимо собрать файл.
+* *String* **keysetsFile** — Исходный keysets-файл. По умолчанию — `?.keysets.{lang}.js`. (его предоставляет технология `files`). По умолчанию — `?.files`.
+* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — ['bh.js'].
+* *Boolean* **sourcemap** — строить карты кода.
+* *String|Array* **mimic** — имена переменных/модулей для экспорта.
+* *String* **jsAttrName** — атрибут блока с параметрами инициализации. По умолчанию — `data-bem`.
+* *String* **jsAttrScheme** — Cхема данных для параметров инициализации. По умолчанию — `json`. Форматы: `js` — Получаем `return { ... }`. `json` — JSON-формат. Получаем `{ ... }`.
+* *String|Boolean* **jsCls** — имя `i-bem` CSS-класса. По умолчанию - `i-bem`. Для того, чтобы класс не добавлялся, следует указать значение `false` или пустую строку.
+* *Boolean* **escapeContent** — экранирование содержимого. По умолчанию - `false`.
+
+**Пример**
+```javascript
+nodeConfig.addTech(require('enb-bem-core-i18n/techs/bh-bundle-i18n'));
 ```
 
 Лицензия
