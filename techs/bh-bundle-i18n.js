@@ -54,26 +54,22 @@ module.exports = require('enb-bh/techs/bh-bundle').buildFlow()
     .builder(function (templateFiles, keysetsFilename) {
         var cache = this.node.getNodeCache(this._target),
             cacheKey = 'keysets-file-' + path.basename(keysetsFilename),
-            promiseCompileBH = this._compileBH(templateFiles),
-            promise;
+            promises = [this._compileBH(templateFiles)];
 
         if (cache.needRebuildFile(cacheKey, keysetsFilename)) {
             dropRequireCache(require, keysetsFilename);
-            promise = asyncRequire(keysetsFilename)
+            promises.push(asyncRequire(keysetsFilename)
                 .then(function (keysets) {
                     cache.cacheFileInfo(cacheKey, keysetsFilename);
 
                     return keysets;
-                });
+                }));
         } else {
-            promise = asyncRequire(keysetsFilename);
+            promises.push(asyncRequire(keysetsFilename));
         }
 
-        return vow.all([
-                promise,
-                promiseCompileBH
-            ])
-            .spread(function (sources, bh) {
+        return vow.all(promises)
+            .spread(function (bh, sources) {
                 var parsed = keysets.parse(sources);
 
                 return [

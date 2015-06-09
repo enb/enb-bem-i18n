@@ -5,8 +5,8 @@ var path = require('path'),
     TestNode = require('enb/lib/test/mocks/test-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    Tech = require('../../techs/bh-bundle-i18n'),
-    core = require('../fixtures/core.js'),
+    Tech = require('../../../techs/bh-bundle-i18n'),
+    core = require('../../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n,
     bhCoreFilename = require.resolve('enb-bh/node_modules/bh/lib/bh.js'),
     bhCoreContents = fs.readFileSync(bhCoreFilename);
 
