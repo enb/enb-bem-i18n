@@ -70,16 +70,16 @@ module.exports = require('enb-bh/techs/bh-bundle').buildFlow()
         }
 
         return vow.all([
-            promise,
-            promiseCompileBH
-        ])
+                promise,
+                promiseCompileBH
+            ])
             .spread(function (sources, bh) {
                 var parsed = keysets.parse(sources);
 
                 return [
                     bh,
                     '(function () {',
-                    '    var __i18n__ = ' + compile(parsed.core, parsed.keysets) + ',',
+                    '    var __i18n__ = ' + compile(parsed, this._lang) + ',',
                     '        defineAsGlobal = true;',
                     '',
                     '    // CommonJS',
