@@ -7,16 +7,21 @@ var EOL = require('os').EOL,
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../../techs/bh-bundle-i18n'),
-    core = require('../../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n,
+    core,
     bhCoreFilename = require.resolve('enb-bh/node_modules/bh/lib/bh.js'),
     bhCoreContents = fs.readFileSync(bhCoreFilename);
 
-describe('bh-bundle-i18n v2', function () {
+describe('bh-bundle-i18n v1', function () {
+    before(function () {
+        var p = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js';
+        core = fs.readFileSync(path.resolve(p), { encoding: 'utf-8' });
+    });
+
     afterEach(function () {
         mock.restore();
     });
 
-    it('must throw err if i18n is not found', function () {
+    it('must throw err if i18n core is not found', function () {
         var keysets = {};
 
         return build(keysets)
@@ -26,10 +31,24 @@ describe('bh-bundle-i18n v2', function () {
             });
     });
 
-    it('must throw err if i18n is not function', function () {
+    it('must throw err if i18n core is not string', function () {
         var keysets = {
-            i18n: {
-                i18n: 'val'
+            all: {
+                '': {}
+            }
+        };
+
+        return build(keysets)
+            .fail(function (err) {
+                err.must.a(Error);
+                err.message.must.be('Core of i18n is not found!');
+            });
+    });
+
+    it('must throw err if i18n core does not match regular expression', function () {
+        var keysets = {
+            all: {
+                '': 'hello world'
             }
         };
 
@@ -42,8 +61,8 @@ describe('bh-bundle-i18n v2', function () {
 
     it('must return value', function () {
         var keysets = {
-            i18n: {
-                i18n: core
+            all: {
+                '': core
             },
             scope: {
                 key: 'val'
@@ -53,72 +72,6 @@ describe('bh-bundle-i18n v2', function () {
         return build(keysets)
             .then(function (BH) {
                 var bemjson = { block: 'block', scope: 'scope', key: 'key' },
-                    html = BH.apply(bemjson);
-
-                html.must.be('<div class=\"block\">val</div>');
-            });
-    });
-
-    it('must build fake key if keysets is empty', function () {
-        var keysets = {
-            i18n: {
-                i18n: core
-            }
-        };
-
-        return build(keysets)
-            .then(function (BH) {
-                var bemjson = { block: 'block', scope: 'scope', key: 'key' },
-                    html = BH.apply(bemjson);
-
-                html.must.be('<div class=\"block\">scope:key</div>');
-            });
-    });
-
-    it('must build key by params', function () {
-        var keysets = {
-            i18n: {
-                i18n: core
-            },
-            scope: {
-                key: function (params) {
-                    return params.join();
-                }
-            }
-        };
-
-        return build(keysets)
-            .then(function (BH) {
-                var bemjson = { block: 'block', scope: 'scope', key: 'key', params: ['p1', 'p2'] },
-                    html = BH.apply(bemjson);
-
-                html.must.be('<div class=\"block\">p1,p2</div>');
-            });
-    });
-
-    it('must provide i18n instance to function', function () {
-        var keysets = {
-            i18n: {
-                i18n: core
-            },
-            'scope-1': {
-                key: 'val'
-            },
-            'scope-2': {
-                key: function (params, i18n) {
-                    return i18n(params.scope, params.key);
-                }
-            }
-        };
-
-        return build(keysets)
-            .then(function (BH) {
-                var bemjson = {
-                        block: 'block',
-                        scope: 'scope-1',
-                        key: 'key',
-                        params: { scope: 'scope-1', key: 'key' }
-                    },
                     html = BH.apply(bemjson);
 
                 html.must.be('<div class=\"block\">val</div>');
@@ -133,7 +86,7 @@ describe('bh-bundle-i18n v2', function () {
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
-                            i18n: { i18n: core },
+                            all: { '': core },
                             scope: { key: 'val' }
                         }),
                         mtime: time
@@ -162,7 +115,7 @@ describe('bh-bundle-i18n v2', function () {
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
-                            i18n: { i18n: core },
+                            all: { '': core },
                             scope: { key: 'val2' }
                         }),
                         mtime: time
@@ -198,7 +151,7 @@ describe('bh-bundle-i18n v2', function () {
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
-                            i18n: { i18n: core },
+                            all: { '': core },
                             scope: { key: 'val' }
                         }),
                         mtime: new Date(1)
@@ -227,7 +180,7 @@ describe('bh-bundle-i18n v2', function () {
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
-                            i18n: { i18n: core },
+                            all: { '': core },
                             scope: { key: 'val2' }
                         }),
                         mtime: new Date(2)
