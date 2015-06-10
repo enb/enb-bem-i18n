@@ -28,7 +28,8 @@
  * nodeConfig.addTech([ require('enb-bem-core-i18n/techs/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
  * ```
  */
-var path = require('path'),
+var EOL = require('os').EOL,
+    path = require('path'),
     vow = require('vow'),
     vfs = require('enb/lib/fs/async-fs'),
     bemcompat = require('bemhtml-compat'),
@@ -68,12 +69,11 @@ module.exports = require('enb-bemxjst/techs/bemhtml').buildFlow()
                         'oninit(function(exports, context) {',
                         '    context.BEMContext.prototype.i18n = ' + compile(parsed, this._lang) + ';',
                         '});'
-                    ].join('\n');
+                    ].join(EOL);
 
                 return this._readSourceFiles(sourceFiles, true)
                     .then(function (sources) {
-                        var source = sources.join('\n') + template;
-
+                        var source = sources.join(EOL) + template;
                         return this._bemxjstProcess(source);
                     }, this);
             }, this);
@@ -87,9 +87,9 @@ module.exports = require('enb-bemxjst/techs/bemhtml').buildFlow()
                             source = bemcompat.transpile(source);
                         }
 
-                        return '/* begin: ' + file.fullname + ' *' + '/\n' +
+                        return '/* begin: ' + file.fullname + ' */' + EOL +
                             source +
-                            '\n/* end: ' + file.fullname + ' *' + '/';
+                            EOL + '/* end: ' + file.fullname + ' *' + '/';
                     });
             }));
         }
