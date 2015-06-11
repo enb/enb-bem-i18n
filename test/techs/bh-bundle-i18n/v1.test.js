@@ -13,8 +13,8 @@ var EOL = require('os').EOL,
 
 describe('bh-bundle-i18n v1', function () {
     before(function () {
-        var p = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js';
-        core = fs.readFileSync(path.resolve(p), { encoding: 'utf-8' });
+        var filename = path.resolve('./test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js');
+        core = fs.readFileSync(path.resolve(filename), { encoding: 'utf-8' });
     });
 
     afterEach(function () {
@@ -34,7 +34,7 @@ describe('bh-bundle-i18n v1', function () {
     it('must throw err if i18n core is not string', function () {
         var keysets = {
             all: {
-                '': {}
+                '': function () {}
             }
         };
 
@@ -45,7 +45,7 @@ describe('bh-bundle-i18n v1', function () {
             });
     });
 
-    it('must throw err if i18n core does not match regular expression', function () {
+    it('must throw err if i18n core is not valid', function () {
         var keysets = {
             all: {
                 '': 'hello world'
@@ -77,6 +77,45 @@ describe('bh-bundle-i18n v1', function () {
                 html.must.be('<div class=\"block\">val</div>');
             });
     });
+
+    it('must return empty localization value for empty keysets (only core)', function () {
+        var keysets = {
+            all: {
+                '': core
+            }
+        };
+
+        return build(keysets)
+            .then(function (BH) {
+                var bemjson = { block: 'block', scope: 'scope', key: 'key' },
+                    html = BH.apply(bemjson);
+
+                html.must.be('<div class=\"block\"></div>');
+            });
+    });
+
+    /*
+    it('must build key by params', function () {
+        var keysets = {
+            all: {
+                '': core
+            },
+            scope: {
+                key: function (params) {
+                    return params.join();
+                }
+            }
+        };
+
+        return build(keysets)
+            .then(function (BH) {
+                var bemjson = { block: 'block', scope: 'scope', key: 'key', params: ['p1', 'p2'] },
+                    html = BH.apply(bemjson);
+
+                html.must.be('<div class=\"block\">p1,p2</div>');
+            });
+    });
+    */
 
     describe('cache', function () {
         it('must get result from cache', function () {
