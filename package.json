@@ -33,6 +33,8 @@
     "enb": ">= 0.11.0 < 1.0.0"
   },
   "dependencies": {
+    "bemhtml-compat": "0.1.2",
+    "enb-bemxjst": "1.3.4",
     "dom-js": "0.0.9",
     "vow": "0.4.9",
     "enb-bh": "1.0.0-beta1",
