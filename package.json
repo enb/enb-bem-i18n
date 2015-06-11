@@ -35,6 +35,7 @@
   "dependencies": {
     "dom-js": "0.0.9",
     "vow": "0.4.9",
+    "enb-bh": "1.0.0-beta1",
     "serialize-javascript": "1.0.0"
   },
   "devDependencies": {
