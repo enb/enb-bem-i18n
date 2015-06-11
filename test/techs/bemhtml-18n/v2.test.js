@@ -7,9 +7,14 @@ var path = require('path'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../../techs/bemhtml-i18n'),
     core = require('../../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n,
-    bemhtmlContents = fs.readFileSync(path.join(__dirname, '..', '..', 'exlib', 'bemhtml.js'));
+    bemhtmlContents;
 
 describe('bemhtml-i18n v2', function () {
+    before(function () {
+        var bemhtmlFilename = './test/fixtures/bem-core/common.blocks/i-bem/i-bem.bemhtml';
+        bemhtmlContents = fs.readFileSync(path.resolve(bemhtmlFilename), { encoding: 'utf-8' });
+    });
+
     afterEach(function () {
         mock.restore();
     });

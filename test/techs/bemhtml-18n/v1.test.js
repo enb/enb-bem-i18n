@@ -7,13 +7,15 @@ var EOL = require('os').EOL,
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../../techs/bemhtml-i18n'),
-    bemhtmlContents = fs.readFileSync(path.join(__dirname, '..', '..', 'exlib', 'bemhtml.js')),
+    bemhtmlContents,
     core;
 
 describe('bemhtml-i18n v1', function () {
     before(function () {
-        var p = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js';
-        core = fs.readFileSync(path.resolve(p), { encoding: 'utf-8' });
+        var coreFilename = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js',
+            bemhtmlFilename = './test/fixtures/bem-core/common.blocks/i-bem/i-bem.bemhtml';
+        core = fs.readFileSync(path.resolve(coreFilename), { encoding: 'utf-8' });
+        bemhtmlContents = fs.readFileSync(path.resolve(bemhtmlFilename), { encoding: 'utf-8' });
     });
 
     afterEach(function () {
@@ -33,7 +35,7 @@ describe('bemhtml-i18n v1', function () {
     it('must throw err if i18n core is not string', function () {
         var keysets = {
             all: {
-                '': {}
+                '': function () {}
             }
         };
 
@@ -44,7 +46,7 @@ describe('bemhtml-i18n v1', function () {
             });
     });
 
-    it('must throw err if i18n core does not match regular expression', function () {
+    it('must throw err if i18n core is not valid', function () {
         var keysets = {
             all: {
                 '': 'hello world'
@@ -75,6 +77,41 @@ describe('bemhtml-i18n v1', function () {
                     html = BEMHTML.apply(bemjson);
 
                 html.must.be('<div class=\"block\">val</div>');
+            });
+    });
+
+    it('must return empty localization value for empty keysets (only core)', function () {
+        var keysets = {
+            all: { '': core }
+        };
+
+        return build(keysets)
+            .then(function (exports) {
+                var BEMHTML = exports.BEMHTML,
+                    bemjson = { block: 'block', scope: 'scope', key: 'key' },
+                    html = BEMHTML.apply(bemjson);
+
+                html.must.be('<div class=\"block\"></div>');
+            });
+    });
+
+    it('must build key by params', function () {
+        var keysets = {
+            all: {
+                '': core
+            },
+            scope: {
+                key: '<i18n:param>param</i18n:param> value'
+            }
+        };
+
+        return build(keysets)
+            .then(function (exports) {
+                var BEMHTML = exports.BEMHTML,
+                    bemjson = { block: 'block', scope: 'scope', key: 'key', params: { param: 1 } },
+                    html = BEMHTML.apply(bemjson);
+
+                html.must.be('<div class=\"block\">1 value</div>');
             });
     });
 
