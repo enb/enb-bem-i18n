@@ -68,6 +68,22 @@ describe('i18n-js v1', function () {
             });
     });
 
+    it('must build key by params', function () {
+        var keysets = {
+            all: {
+                '': core
+            },
+            scope: {
+                key: '<i18n:param>param</i18n:param> value'
+            }
+        };
+
+        return build(keysets)
+            .then(function (i18n) {
+                i18n('scope', 'key', { param: 1 }).must.be('1 value');
+            });
+    });
+
     describe('cache', function () {
         it('must get result from cache', function () {
             var time = new Date(1);

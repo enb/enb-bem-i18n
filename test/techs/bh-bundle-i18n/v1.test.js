@@ -94,28 +94,24 @@ describe('bh-bundle-i18n v1', function () {
             });
     });
 
-    /*
     it('must build key by params', function () {
         var keysets = {
             all: {
                 '': core
             },
             scope: {
-                key: function (params) {
-                    return params.join();
-                }
+                key: '<i18n:param>param</i18n:param> value'
             }
         };
 
         return build(keysets)
             .then(function (BH) {
-                var bemjson = { block: 'block', scope: 'scope', key: 'key', params: ['p1', 'p2'] },
+                var bemjson = { block: 'block', scope: 'scope', key: 'key', params: { param: 1 } },
                     html = BH.apply(bemjson);
 
-                html.must.be('<div class=\"block\">p1,p2</div>');
+                html.must.be('<div class=\"block\">1 value</div>');
             });
     });
-    */
 
     describe('cache', function () {
         it('must get result from cache', function () {
