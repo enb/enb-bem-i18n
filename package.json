@@ -35,6 +35,7 @@
   "dependencies": {
     "bemhtml-compat": "0.1.2",
     "enb-bemxjst": "1.3.4",
+    "enb-xjst": "enb-bem/enb-xjst#issue-63",
     "dom-js": "0.0.9",
     "vow": "0.4.9",
     "enb-bh": "1.0.0-beta2",
@@ -49,6 +50,7 @@
     "mocha": "2.2.5",
     "mock-enb": "0.0.1",
     "mock-fs": "2.7.0",
+    "mock-require": "1.0.5",
     "must": "0.12.0"
   },
   "scripts": {
