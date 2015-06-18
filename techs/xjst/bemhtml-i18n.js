@@ -4,7 +4,7 @@
  *
  * Собирает `?.bemhtml.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файла и исходных шаблонов.
  *
- * Склеивает *bemhtml.xjst* и *bemhtml*-файлы по deps'ам, обрабатывает `bem-xjst`-транслятором,
+ * Склеивает *bemhtml.xjst* и *bemhtml*-файлы по deps'ам, обрабатывает `xjst`-транслятором,
  * сохраняет (по умолчанию) в виде `?.bemhtml.js`.
  * **Внимание:** поддерживает только js-синтаксис.
  * **Опции**
@@ -25,21 +25,18 @@
  * **Пример**
  *
  * ```javascript
- * nodeConfig.addTech([ require('enb-bem-core-i18n/techs/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
+ * nodeConfig.addTech([ require('enb-bem-i18n/techs/xjst/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
  * ```
  */
 var EOL = require('os').EOL,
     path = require('path'),
-    vow = require('vow'),
-    vfs = require('enb/lib/fs/async-fs'),
-    bemcompat = require('bemhtml-compat'),
     asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    keysets = require('../lib/keysets'),
-    compile = require('../lib/compile'),
-    XJST_SUFFIX = 'xjst';
+    SourceMap = require('enb-xjst/lib/source-map'),
+    keysets = require('../../lib/keysets'),
+    compile = require('../../lib/compile');
 
-module.exports = require('enb-bemxjst/techs/bemhtml').buildFlow()
+module.exports = require('enb-xjst/techs/bemhtml').buildFlow()
     .name('bemhtml-i18n')
     .target('target', '?.bemhtml.{lang}.js')
     .defineRequiredOption('lang')
@@ -71,27 +68,15 @@ module.exports = require('enb-bemxjst/techs/bemhtml').buildFlow()
                         '});'
                     ].join(EOL);
 
-                return this._readSourceFiles(sourceFiles, true)
+                return this._readSourceFiles(sourceFiles)
                     .then(function (sources) {
-                        var source = sources.join(EOL) + template;
-                        return this._bemxjstProcess(source);
+                        var sourceMap = SourceMap(sources),
+                            code = sourceMap.getCode();
+
+                        code += template;
+                        return this._xjstProcess(code, sourceMap);
                     }, this);
             }, this);
     })
-    .methods({
-        _readSourceFiles: function (sourceFiles, oldSyntax) {
-            return vow.all(sourceFiles.map(function (file) {
-                return vfs.read(file.fullname, 'utf8')
-                    .then(function (source) {
-                        if (oldSyntax && XJST_SUFFIX !== file.suffix.split('.').pop()) {
-                            source = bemcompat.transpile(source);
-                        }
-
-                        return '/* begin: ' + file.fullname + ' */' + EOL +
-                            source +
-                            EOL + '/* end: ' + file.fullname + ' *' + '/';
-                    });
-            }));
-        }
-    })
     .createTech();
+

@@ -6,11 +6,11 @@ var EOL = require('os').EOL,
     TestNode = require('enb/lib/test/mocks/test-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    Tech = require('../../../techs/bemhtml-i18n'),
+    Tech = require('../../../../techs/xjst/bemhtml-i18n'),
     bemhtmlContents,
     core;
 
-describe('bemhtml-i18n v1', function () {
+describe('xjst bemhtml-i18n v1', function () {
     before(function () {
         var coreFilename = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js',
             bemhtmlFilename = './test/fixtures/bem-core/common.blocks/i-bem/i-bem.bemhtml';

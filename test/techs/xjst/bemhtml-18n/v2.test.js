@@ -5,11 +5,11 @@ var path = require('path'),
     TestNode = require('enb/lib/test/mocks/test-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    Tech = require('../../../techs/bemhtml-i18n'),
-    core = require('../../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n,
+    Tech = require('../../../../techs/xjst/bemhtml-i18n'),
+    core = require('../../../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n,
     bemhtmlContents;
 
-describe('bemhtml-i18n v2', function () {
+describe('xjst bemhtml-i18n v2', function () {
     before(function () {
         var bemhtmlFilename = './test/fixtures/bem-core/common.blocks/i-bem/i-bem.bemhtml';
         bemhtmlContents = fs.readFileSync(path.resolve(bemhtmlFilename), { encoding: 'utf-8' });
