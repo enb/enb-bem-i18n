@@ -1,8 +1,8 @@
 var mockFs = require('mock-fs'),
     MockNode = require('mock-enb/lib/mock-node'),
-    Tech = require('../../techs/i18n-keysets-xml');
+    Tech = require('../../techs/keysets-xml');
 
-describe('i18n-keysets-xml', function () {
+describe('keysets-xml', function () {
     afterEach(function () {
         mockFs.restore();
     });

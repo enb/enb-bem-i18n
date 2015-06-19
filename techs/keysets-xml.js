@@ -1,5 +1,5 @@
 /**
- * i18n-keysets-xml
+ * keysets-xml
  * ================
  *
  * Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
@@ -14,16 +14,17 @@
  * **Пример**
  *
  * ```javascript
- * nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
+ * nodeConfig.addTech([ require('keysets-xml'), { lang: '{lang}' } ]);
  * ```
  */
-var path = require('path'),
+var EOL = require('os').EOL,
+    path = require('path'),
     domjs = require('dom-js'),
     asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache');
 
 module.exports = require('enb/lib/build-flow').create()
-    .name('i18n-keysets-xml')
+    .name('keysets-xml')
     .target('target', '?.keysets.{lang}.xml')
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
@@ -66,17 +67,17 @@ module.exports = require('enb/lib/build-flow').create()
                     return prev;
                 }, []);
 
-            return this.getPrependXml(lang) + res.join('\n') + this.getAppendXml(lang);
+            return this.getPrependXml(lang) + res.join(EOL) + this.getAppendXml(lang);
         }, this);
     })
     .methods({
         getPrependXml: function () {
-            return '<?xml version="1.0" encoding="utf-8"?>\n' +
+            return '<?xml version="1.0" encoding="utf-8"?>' + EOL +
                 '<tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform" ' +
-                'xmlns:i18n="urn:yandex-functions:internationalization">\n';
+                'xmlns:i18n="urn:yandex-functions:internationalization">' + EOL;
         },
         getAppendXml: function () {
-            return '\n</tanker>';
+            return EOL + '</tanker>';
         }
     })
     .createTech();
