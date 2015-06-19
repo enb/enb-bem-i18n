@@ -24,8 +24,7 @@ npm install --save-dev enb-bem-i18n
 
 * [i18n-js](#i18n-js)
 * [keysets](#keysets)
-* [i18n-keysets-xml](#i18n-keysets-xml)
-* [i18n-bemjson-to-html](#i18n-bemjson-to-html)
+* [keysets-xml](#keysets-xml)
 * [bh-bundle-i18n](#bh-bundle-i18n)
 * [bemhtml-i18n](#bemhtml-i18n)
 
@@ -67,7 +66,7 @@ nodeConfig.addTechs([
 ]);
 ```
 
-### i18n-keysets-xml
+### keysets-xml
 
 Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
 
@@ -81,25 +80,7 @@ nodeConfig.addTechs([
 **Пример**
 
 ```javascript
-nodeConfig.addTech(require('enb-bem-i18n/techs/i18n-keysets-xml'));
-```
-
-### i18n-bemjson-to-html
-
-Собирает *html*-файл с помощью *bemjson*, *BH* или *BEMHTML*, *lang.all* и *lang.{lang}*.
-
-**Опции**
-
-* *String* **templateFile** — Исходный файл шаблона. Обязательный параметр.
-* *String* **bemjsonFile** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
-* *String* **langAllFile** — Исходный langAll-файл. По умолчанию — `?.lang.all.js`.
-* *String* **langFile** — Исходный lang-файл. По умолчанию — `?.lang.{lang}.js`. Если параметр lang не указан, берется первый из объявленных в проекте языков
-* *String* **target** — Результирующий HTML-файл. По умолчанию — `?.{lang}.html`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb-bem-i18n/techs/i18n-bemjson-to-html'));
+nodeConfig.addTech(require('enb-bem-i18n/techs/keysets-xml'));
 ```
 
 ### bh-bundle-i18n
@@ -160,9 +141,7 @@ nodeConfig.addTech(require('enb-bem-i18n/techs/bh-сommonjs-i18n'));
 
 Собирает `?.bemhtml.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файла и исходных шаблонов.
 
-Склеивает *bemhtml.xjst* и *bemhtml*-файлы по deps'ам, обрабатывает `bem-xjst`-транслятором,  сохраняет (по умолчанию) в виде `?.bemhtml.js`.
-
-**Внимание:** поддерживает только js-синтаксис.
+Склеивает *bemhtml.xjst* и *bemhtml*-файлы по deps'ам, обрабатывает `bem-xjst` или `xjst` -транслятором,  сохраняет (по умолчанию) в виде `?.bemhtml.js`.
 
 **Опции**
 
@@ -178,8 +157,14 @@ nodeConfig.addTech(require('enb-bem-i18n/techs/bh-сommonjs-i18n'));
 
 **Пример**
 
+Для bemxjst:
 ```javascript
-nodeConfig.addTech([ require('enb-bem-i18n/techs/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
+nodeConfig.addTech([ require('enb-bem-i18n/techs/bemxjst/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
+```
+
+Для xjst:
+```javascript
+nodeConfig.addTech([ require('enb-bem-i18n/techs/xjst/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
 ```
 
 Лицензия
