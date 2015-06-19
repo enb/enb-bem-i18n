@@ -1,3 +1,4 @@
+/*
 var path = require('path'),
     fs = require('fs'),
     mock = require('mock-fs'),
@@ -11,7 +12,7 @@ var path = require('path'),
 
 describe('xjst bemhtml-i18n v2', function () {
     before(function () {
-        var bemhtmlFilename = './test/fixtures/bem-core/common.blocks/i-bem/i-bem.bemhtml';
+        var bemhtmlFilename = require.resolve('bem-bl-xjst/i-bem__html.bemhtml');
         bemhtmlContents = fs.readFileSync(path.resolve(bemhtmlFilename), { encoding: 'utf-8' });
     });
 
@@ -160,12 +161,7 @@ describe('xjst bemhtml-i18n v2', function () {
             mock({
                 blocks: {
                     'base.bemhtml': bemhtmlContents,
-                    'block.bemhtml': [
-                        'block("block").content()(function () {',
-                        '    var ctx = this.ctx;',
-                        '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                        '});'
-                    ].join('\n')
+                    'block.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
                 },
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
@@ -223,12 +219,7 @@ describe('xjst bemhtml-i18n v2', function () {
             mock({
                 blocks: {
                     'base.bemhtml': bemhtmlContents,
-                    'block.bemhtml': [
-                        'block("block").content()(function () {',
-                        '    var ctx = this.ctx;',
-                        '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                        '});'
-                    ].join('\n')
+                    'block.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
                 },
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
@@ -267,12 +258,7 @@ function build(keysets) {
     mock({
         blocks: {
             'base.bemhtml': bemhtmlContents,
-            'block.bemhtml': [
-                'block("block").content()(function () {',
-                '    var ctx = this.ctx;',
-                '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                '});'
-            ].join('\n')
+            'block.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
         },
         bundle: {
             'bundle.keysets.lang.js': serialize(keysets)
@@ -295,3 +281,4 @@ function build(keysets) {
 function serialize(js) {
     return 'module.exports = ' + serializeJS(js) + ';';
 }
+*/

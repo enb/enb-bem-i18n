@@ -63,18 +63,39 @@ module.exports = require('enb-xjst/techs/bemhtml').buildFlow()
             .then(function (sources) {
                 var parsed = keysets.parse(sources),
                     template = [
-                        'oninit(function(exports, context) {',
-                        '    context.BEMContext.prototype.i18n = ' + compile(parsed, this._lang) + ';',
-                        '});'
+                         '!function oninit() {',
+                         '    (function(global, bem_) {',
+                         '        if(bem_.I18N) {',
+                         '            return;',
+                         '        }',
+                         '        /** @global points to global context */',
+                         '        global.BEM = bem_;',
+                         '        bem_.I18N = ' + compile(parsed, this._lang) + ';',
+                         // '        var i18n = bem_.I18N = function(keyset, key) {',
+                         // '            return "BLA BLA";',
+                         // '        };',
+                         // '        i18n.keyset = function() { return i18n }',
+                         // '        i18n.key = function(key) { return key }',
+                         // '        i18n.lang = function() { return }',
+                         '    })(this, typeof BEM === "undefined" ? {} : BEM);',
+                         '}();'
                     ].join(EOL);
+
+                // console.log(compile(parsed, this._lang));
+                compile;
+                parsed;
 
                 return this._readSourceFiles(sourceFiles)
                     .then(function (sources) {
                         var sourceMap = SourceMap(sources),
                             code = sourceMap.getCode();
 
-                        code += template;
-                        return this._xjstProcess(code, sourceMap);
+                        code = template + code;
+                        return this._xjstProcess(code, sourceMap).then(function (res) {
+                            // res = res + template;
+                            // console.log('RESULT: ' + res);
+                            return res;
+                        });
                     }, this);
             }, this);
     })

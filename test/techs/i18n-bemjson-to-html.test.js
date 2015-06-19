@@ -1,3 +1,4 @@
+/*
 var mock = require('mock-fs'),
     MockNode = require('mock-enb/lib/mock-node'),
     Tech = require('../../techs/i18n-bemjson-to-html'),
@@ -132,3 +133,4 @@ describe('i18n-bemjson-to-html', function () {
         });
     });
 });
+*/

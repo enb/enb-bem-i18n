@@ -1,5 +1,4 @@
-var EOL = require('os').EOL,
-    path = require('path'),
+var path = require('path'),
     fs = require('fs'),
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
@@ -13,9 +12,9 @@ var EOL = require('os').EOL,
 describe('xjst bemhtml-i18n v1', function () {
     before(function () {
         var coreFilename = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js',
-            bemhtmlFilename = './test/fixtures/bem-core/common.blocks/i-bem/i-bem.bemhtml';
+            bemhtmlFilename = require.resolve('bem-bl-xjst/i-bem__html.bemhtml');
         core = fs.readFileSync(path.resolve(coreFilename), { encoding: 'utf-8' });
-        bemhtmlContents = fs.readFileSync(path.resolve(bemhtmlFilename), { encoding: 'utf-8' });
+        bemhtmlContents = fs.readFileSync(bemhtmlFilename, { encoding: 'utf-8' });
     });
 
     afterEach(function () {
@@ -73,10 +72,10 @@ describe('xjst bemhtml-i18n v1', function () {
         return build(keysets)
             .then(function (exports) {
                 var BEMHTML = exports.BEMHTML,
-                    bemjson = { block: 'block', scope: 'scope', key: 'key' },
+                    bemjson = { block: 'foo', scope: 'scope', key: 'key' },
                     html = BEMHTML.apply(bemjson);
 
-                html.must.be('<div class=\"block\">val</div>');
+                html.must.be('<div class=\"foo\">val</div>');
             });
     });
 
@@ -88,10 +87,10 @@ describe('xjst bemhtml-i18n v1', function () {
         return build(keysets)
             .then(function (exports) {
                 var BEMHTML = exports.BEMHTML,
-                    bemjson = { block: 'block', scope: 'scope', key: 'key' },
+                    bemjson = { block: 'foo', scope: 'scope', key: 'key' },
                     html = BEMHTML.apply(bemjson);
 
-                html.must.be('<div class=\"block\"></div>');
+                html.must.be('<div class=\"foo\"></div>');
             });
     });
 
@@ -108,10 +107,10 @@ describe('xjst bemhtml-i18n v1', function () {
         return build(keysets)
             .then(function (exports) {
                 var BEMHTML = exports.BEMHTML,
-                    bemjson = { block: 'block', scope: 'scope', key: 'key', params: { param: 1 } },
+                    bemjson = { block: 'foo', scope: 'scope', key: 'key', params: { param: 1 } },
                     html = BEMHTML.apply(bemjson);
 
-                html.must.be('<div class=\"block\">1 value</div>');
+                html.must.be('<div class=\"foo\">1 value</div>');
             });
     });
 
@@ -143,12 +142,7 @@ describe('xjst bemhtml-i18n v1', function () {
             mock({
                 blocks: {
                     'base.bemhtml': bemhtmlContents,
-                    'block.bemhtml': [
-                        'block("block").content()(function () {',
-                        '    var ctx = this.ctx;',
-                        '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                        '});'
-                    ].join(EOL)
+                    'foo.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
                 },
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
@@ -171,13 +165,13 @@ describe('xjst bemhtml-i18n v1', function () {
                 .spread(function (exports) {
                     var BEMHTML = exports.BEMHTML,
                         bemjson = {
-                            block: 'block',
+                            block: 'foo',
                             scope: 'scope',
                             key: 'key'
                         },
                         html = BEMHTML.apply(bemjson);
 
-                    html.must.be('<div class=\"block\">val</div>');
+                    html.must.be('<div class=\"foo\">val</div>');
                 });
         });
 
@@ -206,12 +200,7 @@ describe('xjst bemhtml-i18n v1', function () {
             mock({
                 blocks: {
                     'base.bemhtml': bemhtmlContents,
-                    'block.bemhtml': [
-                        'block("block").content()(function () {',
-                        '    var ctx = this.ctx;',
-                        '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                        '});'
-                    ].join(EOL)
+                    'foo.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
                 },
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
@@ -234,13 +223,13 @@ describe('xjst bemhtml-i18n v1', function () {
                 .spread(function (exports) {
                     var BEMHTML = exports.BEMHTML,
                         bemjson = {
-                            block: 'block',
+                            block: 'foo',
                             scope: 'scope',
                             key: 'key'
                         },
                         html = BEMHTML.apply(bemjson);
 
-                    html.must.be('<div class=\"block\">val2</div>');
+                    html.must.be('<div class=\"foo\">val2</div>');
                 });
         });
     });
@@ -250,12 +239,7 @@ function build(keysets) {
     mock({
         blocks: {
             'base.bemhtml': bemhtmlContents,
-            'block.bemhtml': [
-                'block("block").content()(function () {',
-                '    var ctx = this.ctx;',
-                '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                '});'
-            ].join(EOL)
+            'foo.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
         },
         bundle: {
             'bundle.keysets.lang.js': serialize(keysets)
