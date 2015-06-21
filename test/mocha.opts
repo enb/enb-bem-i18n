@@ -3,3 +3,4 @@ test/**/*.test.js
 --reporter dot
 --require must
 --require test/lib/mocks
+--timeout 5000

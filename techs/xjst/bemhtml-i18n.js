@@ -62,17 +62,16 @@ module.exports = require('enb-xjst/techs/bemhtml').buildFlow()
         return promise
             .then(function (sources) {
                 var parsed = keysets.parse(sources),
-                    template = [
-                         'if(typeof BEM == "undefined") { var BEM = {}; }',
-                         '(function(global, bem_) {',
-                         '    if(bem_.I18N) {',
-                         '        return;',
-                         '    }',
-                         '    /** @global points to global context */',
-                         '    global.BEM = bem_;',
-                         '    bem_.I18N = ' + compile(parsed, this._lang) + ';',
-                         '})(this, typeof BEM === "undefined" ? {} : BEM);'
+                    i18nWrapperCode = [
+                        'if(typeof BEM == "undefined") { var BEM = {}; }',
+                        '(function(bem_) {',
+                        '    bem_.I18N = ' + compile(parsed, this._lang) + ';',
+                        '}(typeof BEM === "undefined" ? {} : BEM));'
                     ].join(EOL);
+
+                if (parsed.version === 2) {
+                    throw new Error('XJST templates can not be used with bem-core v3 i18n system');
+                }
 
                 return this._readSourceFiles(sourceFiles)
                     .then(function (sources) {
@@ -80,8 +79,7 @@ module.exports = require('enb-xjst/techs/bemhtml').buildFlow()
                             code = sourceMap.getCode();
 
                         return this._xjstProcess(code, sourceMap).then(function (res) {
-                            res = template + res;
-                            return res;
+                            return i18nWrapperCode + res;
                         });
                     }, this);
             }, this);
