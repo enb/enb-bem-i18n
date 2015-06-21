@@ -66,11 +66,11 @@ module.exports = require('enb-xjst/techs/bemhtml').buildFlow()
                         'if(typeof BEM == "undefined") { var BEM = {}; }',
                         '(function(bem_) {',
                         '    bem_.I18N = ' + compile(parsed, this._lang) + ';',
-                        '}(typeof BEM === "undefined" ? {} : BEM));'
+                        '}(BEM));'
                     ].join(EOL);
 
                 if (parsed.version === 2) {
-                    throw new Error('XJST templates can not be used with bem-core v3 i18n system');
+                    throw new Error('XJST templates can not be used with bem-core i18n system');
                 }
 
                 return this._readSourceFiles(sourceFiles)

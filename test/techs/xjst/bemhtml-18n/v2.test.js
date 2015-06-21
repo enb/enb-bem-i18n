@@ -42,7 +42,7 @@ describe('xjst bemhtml-i18n v2', function () {
             });
     });
 
-    it('must throw incompatibility error of XJST templates and bem-core v3 i18n system', function () {
+    it('must throw incompatibility error of XJST templates and bem-core i18n system', function () {
         var keysets = {
             i18n: { i18n: core },
             scope: { key: 'val' }
@@ -50,7 +50,7 @@ describe('xjst bemhtml-i18n v2', function () {
 
         return build(keysets)
             .fail(function (error) {
-                error.message.must.be('XJST templates can not be used with bem-core v3 i18n system');
+                error.message.must.be('XJST templates can not be used with bem-core i18n system');
             });
     });
 });
