@@ -1,8 +1,9 @@
-var mockFs = require('mock-fs'),
+var EOL = require('os').EOL,
+    mockFs = require('mock-fs'),
     MockNode = require('mock-enb/lib/mock-node'),
-    Tech = require('../../techs/i18n-keysets-xml');
+    Tech = require('../../techs/keysets-xml');
 
-describe('i18n-keysets-xml', function () {
+describe('keysets-xml', function () {
     afterEach(function () {
         mockFs.restore();
     });
@@ -39,7 +40,7 @@ describe('i18n-keysets-xml', function () {
                 '</key>',
                 '</keyset>',
                 '</tanker>'
-            ].join('\n');
+            ].join(EOL);
 
         return build(keysets, 'lang')
             .then(function (res) {
@@ -67,7 +68,7 @@ describe('i18n-keysets-xml', function () {
                 '</key>',
                 '</keyset>',
                 '</tanker>'
-            ].join('\n');
+            ].join(EOL);
 
         return build(keysets, 'lang')
             .then(function (res) {
@@ -85,7 +86,7 @@ describe('i18n-keysets-xml', function () {
                 'xmlns:i18n="urn:yandex-functions:internationalization">',
                 '',
                 '</tanker>'
-            ].join('\n');
+            ].join(EOL);
 
         return build(keysets, 'lang')
             .then(function (res) {
@@ -181,5 +182,5 @@ function buildExpectedXml(val) {
         '</key>',
         '</keyset>',
         '</tanker>'
-    ].join('\n');
+    ].join(EOL);
 }

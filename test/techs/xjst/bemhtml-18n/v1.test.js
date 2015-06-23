@@ -5,21 +5,23 @@ var path = require('path'),
     TestNode = require('enb/lib/test/mocks/test-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    Tech = require('../../../techs/bemhtml-i18n'),
-    core = require('../../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n,
-    bemhtmlContents;
+    Tech = require('../../../../techs/xjst/bemhtml-i18n'),
+    bemhtmlContents,
+    core;
 
-describe('bemhtml-i18n v2', function () {
+describe('xjst bemhtml-i18n v1', function () {
     before(function () {
-        var bemhtmlFilename = './test/fixtures/bem-core/common.blocks/i-bem/i-bem.bemhtml';
-        bemhtmlContents = fs.readFileSync(path.resolve(bemhtmlFilename), { encoding: 'utf-8' });
+        var coreFilename = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js',
+            bemhtmlFilename = require.resolve('bem-bl-xjst/i-bem__html.bemhtml');
+        core = fs.readFileSync(path.resolve(coreFilename), { encoding: 'utf-8' });
+        bemhtmlContents = fs.readFileSync(bemhtmlFilename, { encoding: 'utf-8' });
     });
 
     afterEach(function () {
         mock.restore();
     });
 
-    it('must throw err if i18n is not found', function () {
+    it('must throw err if i18n core is not found', function () {
         var keysets = {};
 
         return build(keysets)
@@ -29,10 +31,24 @@ describe('bemhtml-i18n v2', function () {
             });
     });
 
-    it('must throw err if i18n is not function', function () {
+    it('must throw err if i18n core is not string', function () {
         var keysets = {
-            i18n: {
-                i18n: 'val'
+            all: {
+                '': function () {}
+            }
+        };
+
+        return build(keysets)
+            .fail(function (err) {
+                err.must.a(Error);
+                err.message.must.be('Core of i18n is not found!');
+            });
+    });
+
+    it('must throw err if i18n core is not valid', function () {
+        var keysets = {
+            all: {
+                '': 'hello world'
             }
         };
 
@@ -45,8 +61,8 @@ describe('bemhtml-i18n v2', function () {
 
     it('must return value', function () {
         var keysets = {
-            i18n: {
-                i18n: core
+            all: {
+                '': core
             },
             scope: {
                 key: 'val'
@@ -56,79 +72,45 @@ describe('bemhtml-i18n v2', function () {
         return build(keysets)
             .then(function (exports) {
                 var BEMHTML = exports.BEMHTML,
-                    bemjson = { block: 'block', scope: 'scope', key: 'key' },
+                    bemjson = { block: 'foo', scope: 'scope', key: 'key' },
                     html = BEMHTML.apply(bemjson);
 
-                html.must.be('<div class=\"block\">val</div>');
+                html.must.be('<div class=\"foo\">val</div>');
             });
     });
 
-    it('must build fake key if keysets is empty', function () {
+    it('must return empty localization value for empty keysets (only core)', function () {
         var keysets = {
-            i18n: {
-                i18n: core
-            }
+            all: { '': core }
         };
 
         return build(keysets)
             .then(function (exports) {
                 var BEMHTML = exports.BEMHTML,
-                    bemjson = { block: 'block', scope: 'scope', key: 'key' },
+                    bemjson = { block: 'foo', scope: 'scope', key: 'key' },
                     html = BEMHTML.apply(bemjson);
 
-                html.must.be('<div class=\"block\">scope:key</div>');
+                html.must.be('<div class=\"foo\"></div>');
             });
     });
 
     it('must build key by params', function () {
         var keysets = {
-            i18n: {
-                i18n: core
+            all: {
+                '': core
             },
             scope: {
-                key: function (params) {
-                    return params.join();
-                }
+                key: '<i18n:param>param</i18n:param> value'
             }
         };
 
         return build(keysets)
             .then(function (exports) {
                 var BEMHTML = exports.BEMHTML,
-                    bemjson = { block: 'block', scope: 'scope', key: 'key', params: ['p1', 'p2'] },
+                    bemjson = { block: 'foo', scope: 'scope', key: 'key', params: { param: 1 } },
                     html = BEMHTML.apply(bemjson);
 
-                html.must.be('<div class=\"block\">p1,p2</div>');
-            });
-    });
-
-    it('must provide i18n instance to function', function () {
-        var keysets = {
-            i18n: {
-                i18n: core
-            },
-            'scope-1': {
-                key: 'val'
-            },
-            'scope-2': {
-                key: function (params, i18n) {
-                    return i18n(params.scope, params.key);
-                }
-            }
-        };
-
-        return build(keysets)
-            .then(function (exports) {
-                var BEMHTML = exports.BEMHTML,
-                    bemjson = {
-                        block: 'block',
-                        scope: 'scope-1',
-                        key: 'key',
-                        params: { scope: 'scope-1', key: 'key' }
-                    },
-                    html = BEMHTML.apply(bemjson);
-
-                html.must.be('<div class=\"block\">val</div>');
+                html.must.be('<div class=\"foo\">1 value</div>');
             });
     });
 
@@ -140,7 +122,7 @@ describe('bemhtml-i18n v2', function () {
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
-                            i18n: { i18n: core },
+                            all: { '': core },
                             scope: { key: 'val' }
                         }),
                         mtime: time
@@ -160,17 +142,12 @@ describe('bemhtml-i18n v2', function () {
             mock({
                 blocks: {
                     'base.bemhtml': bemhtmlContents,
-                    'block.bemhtml': [
-                        'block("block").content()(function () {',
-                        '    var ctx = this.ctx;',
-                        '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                        '});'
-                    ].join('\n')
+                    'foo.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
                 },
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
-                            i18n: { i18n: core },
+                            all: { '': core },
                             scope: { key: 'val2' }
                         }),
                         mtime: time
@@ -188,13 +165,13 @@ describe('bemhtml-i18n v2', function () {
                 .spread(function (exports) {
                     var BEMHTML = exports.BEMHTML,
                         bemjson = {
-                            block: 'block',
+                            block: 'foo',
                             scope: 'scope',
                             key: 'key'
                         },
                         html = BEMHTML.apply(bemjson);
 
-                    html.must.be('<div class=\"block\">val</div>');
+                    html.must.be('<div class=\"foo\">val</div>');
                 });
         });
 
@@ -203,7 +180,7 @@ describe('bemhtml-i18n v2', function () {
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
-                            i18n: { i18n: core },
+                            all: { '': core },
                             scope: { key: 'val' }
                         }),
                         mtime: new Date(1)
@@ -223,17 +200,12 @@ describe('bemhtml-i18n v2', function () {
             mock({
                 blocks: {
                     'base.bemhtml': bemhtmlContents,
-                    'block.bemhtml': [
-                        'block("block").content()(function () {',
-                        '    var ctx = this.ctx;',
-                        '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                        '});'
-                    ].join('\n')
+                    'foo.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
                 },
                 bundle: {
                     'bundle.keysets.lang.js': mock.file({
                         content: serialize({
-                            i18n: { i18n: core },
+                            all: { '': core },
                             scope: { key: 'val2' }
                         }),
                         mtime: new Date(2)
@@ -251,13 +223,13 @@ describe('bemhtml-i18n v2', function () {
                 .spread(function (exports) {
                     var BEMHTML = exports.BEMHTML,
                         bemjson = {
-                            block: 'block',
+                            block: 'foo',
                             scope: 'scope',
                             key: 'key'
                         },
                         html = BEMHTML.apply(bemjson);
 
-                    html.must.be('<div class=\"block\">val2</div>');
+                    html.must.be('<div class=\"foo\">val2</div>');
                 });
         });
     });
@@ -267,12 +239,7 @@ function build(keysets) {
     mock({
         blocks: {
             'base.bemhtml': bemhtmlContents,
-            'block.bemhtml': [
-                'block("block").content()(function () {',
-                '    var ctx = this.ctx;',
-                '    return this.i18n(ctx.scope, ctx.key, ctx.params);',
-                '});'
-            ].join('\n')
+            'foo.bemhtml': 'block foo, content: BEM.I18N(this.ctx.scope, this.ctx.key, this.ctx.params)'
         },
         bundle: {
             'bundle.keysets.lang.js': serialize(keysets)
@@ -295,3 +262,4 @@ function build(keysets) {
 function serialize(js) {
     return 'module.exports = ' + serializeJS(js) + ';';
 }
+

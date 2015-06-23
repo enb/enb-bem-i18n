@@ -25,7 +25,7 @@
  * **Пример**
  *
  * ```javascript
- * nodeConfig.addTech([ require('enb-bem-core-i18n/techs/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
+ * nodeConfig.addTech([ require('enb-bem-i18n/techs/bemxjst/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
  * ```
  */
 var EOL = require('os').EOL,
@@ -35,8 +35,8 @@ var EOL = require('os').EOL,
     bemcompat = require('bemhtml-compat'),
     asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    keysets = require('../lib/keysets'),
-    compile = require('../lib/compile'),
+    keysets = require('../../lib/keysets'),
+    compile = require('../../lib/compile'),
     XJST_SUFFIX = 'xjst';
 
 module.exports = require('enb-bemxjst/techs/bemhtml').buildFlow()
