@@ -35,7 +35,7 @@
   "dependencies": {
     "bemhtml-compat": "0.1.2",
     "enb-bemxjst": "1.3.4",
-    "enb-xjst": "enb-bem/enb-xjst#issue-63",
+    "enb-xjst": "enb-bem/enb-xjst#master",
     "dom-js": "0.0.9",
     "vow": "0.4.9",
     "enb-bh": "1.0.0-beta2",
