@@ -29,6 +29,7 @@ var vm = require('vm'),
 module.exports = require('enb/lib/build-flow').create()
     .name('i18n-bemjson-to-html')
     .target('target', '?.{lang}.html')
+    .defineRequiredOption('templateFile')
     .useSourceFilename('templateFile')
     .useSourceFilename('bemjsonFile', '?.bemjson.js')
     .useSourceFilename('langAllFile', '?.lang.all.js')
