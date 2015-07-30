@@ -53,7 +53,7 @@ module.exports = require('enb/lib/build-flow').create()
             .then(function (sources) {
                 var parsed = keysets.parse(sources);
                 return [
-                    '(function () {',
+                    '(function (global) {',
                     '    var __i18n__ = ' + compile(parsed, this._lang) + ',',
                     '        defineAsGlobal = true;',
                     '',
@@ -75,7 +75,7 @@ module.exports = require('enb/lib/build-flow').create()
                     '        global.BEM || (global.BEM = {});',
                     '        global.BEM.I18N = __i18n__;',
                     '    }',
-                    '})();'
+                    '})(this);'
                 ].join(EOL);
             }, this);
     })
