@@ -2,14 +2,14 @@
  * i18n-merge-keysets
  * ==================
  *
- * Собирает `?.keysets.<язык>.js`-файлы на основе `*.i18n`-папок для указанных языков.
+ * Compiles `?.keysets.<lang>.js` files using `*.i18n` directories for specified languages.
  *
- * **Опции**
+ * **Options**
  *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
+ * * *String* **target** — The resulting target. By default — `?.keysets.{lang}.js`.
+ * * *String* **lang** — Language, for which file will be compiled.
  *
- * **Пример**
+ * **Example**
  *
  * ```javascript
  * nodeConfig.addTechs([

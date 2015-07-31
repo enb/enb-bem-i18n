@@ -2,21 +2,20 @@
  * i18n-lang-js
  * ============
  *
- * Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
+ * Compiles `?.lang.<lang>.js` files using `?.keysets.<lang>.js` files.
  *
- * Используется для локализации в JS с помощью BEM.I18N.
+ * Use for internationalization in JS using BEM.I18N.
  *
- * **Опции**
+ * **Options**
  *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.lang.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
+ * * *String* **target** — The resulting target. By default — `?.lang.{lang}.js`.
+ * * *String* **lang** — Language, for which file will be compiled.
  *
- * **Пример**
+ * **Example**
  *
  * ```javascript
  * nodeConfig.addTechs([
- *   [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: 'all'} ],
- *   [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: '{lang}'} ],
+ *   [ require('enb-bem-i18n/techs/i18n-lang-js'), { lang: 'all'} ]
  * ]);
  * ```
  */
