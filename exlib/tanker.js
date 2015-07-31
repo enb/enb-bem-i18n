@@ -1,8 +1,8 @@
 /**
  * --- (C) Original BEM Tools
  *
- * Инструментарий для работы с танкером.
- * Заимствованный.
+ * Tools for work with tanker.
+ * Adopted.
  */
 
 var DOM = require('dom-js');

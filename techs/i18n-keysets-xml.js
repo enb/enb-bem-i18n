@@ -2,16 +2,18 @@
  * i18n-keysets-xml
  * ================
  *
- * Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
+ * Compiles `?.keysets.<lang>.xml` files using `?.keysets.<lang>.js` files.
  *
- * Используется для локализации xml-страниц.
+ * Use for XML pages internationalization.
  *
- * **Опции**
+ * **Options**
  *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
+ * * *String* **target** — The resulting target. By default — `?.keysets.{lang}.js`.
+ * * *String* **lang** — Language, for which file will be compiled.
+ * * *String* **dirsTarget** — Name of a target with directory list. By default — `?.i18n`.
+ * * *String* **sourceDirSuffixes** — Directories with specified suffixes involved in the assembly.
  *
- * **Пример**
+ * **Example**
  *
  * ```javascript
  * nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);

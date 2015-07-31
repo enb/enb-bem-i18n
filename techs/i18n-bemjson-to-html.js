@@ -2,15 +2,15 @@
  * i18n-bemjson-to-html
  * ======================
  *
- * Собирает *html*-файл с помощью *bemjson*, *BH* или *BEMHTML*, *lang.all* и *lang.{lang}*.
+ * Compiles HTML file using BEMJSON, BH or BEMHTML, *lang.all*, and *lang.{lang}*.
  *
- * **Опции**
+ * **Options**
  *
- * * *String* **templateFile** — Исходный файл шаблона. По умолчанию — `?.bh.js`.
- * * *String* **bemjsonFile** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
- * * *String* **langAllFile** — Исходный langAll-файл. По умолчанию — `?.lang.all.js`.
- * * *String* **langFile** — Исходный lang-файл. По умолчанию — `?.lang.{lang}.js`.
- *   Если параметр lang не указан, берется первый из объявленных в проекте языков
+ * * *String* **templateFile** — Source template file. By default — `?.bh.js`.
+ * * *String* **bemjsonFile** — Source BEMJSON file. By default — `?.bemjson.js`.
+ * * *String* **langAllFile** — Source `langAll` file. By default — `?.lang.all.js`.
+ * * *String* **langFile** — Source `lang` file. By default — `?.lang.{lang}.js`.
+ *   If the `lang` option is not specified, the first declared languge is applied.
  * * *String* **target** — Результирующий HTML-файл. По умолчанию — `?.{lang}.html`.
  *
  * **Пример**
