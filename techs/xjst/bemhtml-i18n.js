@@ -1,33 +1,3 @@
-/**
- * bemhtml-i18n
- * ============
- *
- * Собирает `?.bemhtml.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файла и исходных шаблонов.
- *
- * Склеивает *bemhtml.xjst* и *bemhtml*-файлы по deps'ам, обрабатывает `xjst`-транслятором,
- * сохраняет (по умолчанию) в виде `?.bemhtml.js`.
- * **Внимание:** поддерживает только js-синтаксис.
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.bemhtml.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- * * *String* **keysetsFile** — Исходный keysets-файл. По умолчанию — `?.keysets.{lang}.js`.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
- *   (его предоставляет технология `files`). По умолчанию — `?.files`.
- * * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет.
- *    По умолчанию — `['bemhtml', 'bemhtml.xjst']`.
- * * *String* **exportName** — Имя переменной-обработчика BEMHTML. По умолчанию — `'BEMHTML'`.
- * * *Boolean* **devMode** — Development-режим. По умолчанию — true.
- * * *Boolean* **cache** — Кэширование. Возможно только в production-режиме. По умолчанию — `false`.
- * * *Object* **modulesDeps** — Хэш-объект, прокидывающий в генерируемую для скомпилированных шаблонов обвязку,
- *    необходимые YModules-модули.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('enb-bem-i18n/techs/xjst/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
- * ```
- */
 var EOL = require('os').EOL,
     path = require('path'),
     asyncRequire = require('enb/lib/fs/async-require'),
@@ -36,6 +6,58 @@ var EOL = require('os').EOL,
     keysets = require('../../lib/keysets'),
     compile = require('../../lib/compile');
 
+/**
+ * @class BemhtmlI18nTech
+ * @augments {BemhtmlTech}
+ * @classdesc
+ *
+ * Compiles localized BEMHTML template files with XJST translator and merges them into a single BEMHTML bundle.<br/>
+ * <br/>
+ * Localization is based on pre-built `?.keysets.{lang}.js` bundle files.<br/><br/>
+ *
+ * @param {Object}    options                                      Options.
+ * @param {String}    [options.target='?.bemhtml.{lang}.js']       Path to a target with compiled file.
+ * @param {String}    options.lang                                 Language identifier.
+ * @param {String}    [options.filesTarget='?.files']              Path to target with FileList.
+ * @param {String}    [options.exportName='BEMHTML']               Name of BEMHTML template variable.
+ * @param {String}    [options.applyFuncName='apply']              Alias  for `apply` function of base BEMHTML template.
+ * @param {Boolean}   [options.devMode=true]                       Sets `devMode` option for convenient debugging.
+ *                                                                 If `devMode` is set to true, code of templates
+ *                                                                 will not be compiled but only wrapped for development
+ *                                                                 purposes.
+ * @param {Boolean}   [options.cache=false]                        Sets `cache` option for cache usage.
+ * @param {Object}    [options.requires]                           Names of dependencies which should be available from
+ *                                                                 code of templates.
+ * @param {String[]}  [options.sourceSuffixes]                     Files with specified suffixes involved in the
+ *                                                                 assembly.
+ * @param {String}    [options.keysetsFile='?.keysets.{lang}.js']  Path to a source keysets file.
+ *
+ * @example
+ * var BemhtmlI18nTech = require('enb-bem-i18n/techs/xjst/bemhtml-i18n'),
+ *     FileProvideTech = require('enb/techs/file-provider'),
+ *     bem = require('enb-bem-techs');
+ *
+ * module.exports = function(config) {
+ *     config.node('bundle', function(node) {
+ *         // get FileList
+ *         node.addTechs([
+ *             [FileProvideTech, { target: '?.bemdecl.js' }],
+ *             [bem.levels, levels: ['blocks']],
+ *             bem.deps,
+ *             bem.files
+ *         ]);
+ *
+ *         // collect and merge keysets files into a bundle
+ *         node.addTechs([
+ *            [ Keysets, { lang: '{lang}' } ]
+ *         ]);
+ *
+ *         // build localized BEMHTML file for given {lang}
+ *         node.addTech([ BemhtmlI18nTech, { lang: '{lang}' } ]);
+ *         node.addTarget('?.bemhtml.{lang}.js');
+ *     });
+ * };
+ */
 module.exports = require('enb-xjst/techs/bemhtml').buildFlow()
     .name('bemhtml-i18n')
     .target('target', '?.bemhtml.{lang}.js')

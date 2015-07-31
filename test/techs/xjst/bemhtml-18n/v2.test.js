@@ -2,7 +2,7 @@ var path = require('path'),
     fs = require('fs'),
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     FileList = require('enb/lib/file-list'),
     Tech = require('../../../../techs/xjst/bemhtml-i18n'),
     core = require('../../../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n,
@@ -10,7 +10,7 @@ var path = require('path'),
 
 describe('xjst bemhtml-i18n v2', function () {
     before(function () {
-        var bemhtmlFilename = require.resolve('bem-bl-xjst/i-bem__html.bemhtml');
+        var bemhtmlFilename = require.resolve('enb-xjst/node_modules/bem-bl-xjst/i-bem__html.bemhtml');
         bemhtmlContents = fs.readFileSync(path.resolve(bemhtmlFilename), { encoding: 'utf-8' });
     });
 
@@ -66,7 +66,7 @@ function build(keysets) {
         }
     });
 
-    var bundle = new TestNode('bundle'),
+    var bundle = new MockNode('bundle'),
         fileList = new FileList();
 
     fileList.loadFromDirSync('blocks');

@@ -1,43 +1,3 @@
-/**
- * bh-bundle-i18n
- * ==============
- *
- * Собирает *BH*-файлы по deps'ам в виде `?.bh.js` бандла на основе `?.keysets.<язык>.js`-файла.
- *
- * Предназначен для сборки как клиентского, так и серверного BH-кода.
- * Предполагается, что в *BH*-файлах не используется `require`.
- *
- * Поддерживает CommonJS и YModules. Если в исполняемой среде нет ни одной модульной системы, то модуль будет
- * предоставлен в глобальную переменную `bh`.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.bh.js`.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- * * *String* **keysetsFile** — Исходный keysets-файл. По умолчанию — `?.keysets.{lang}.js`.
- *   (его предоставляет технология `files`). По умолчанию — `?.files`.
- * * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — ['bh.js'].
- * * *Boolean* **sourcemap** — строить карты кода.
- * * *String|Array* **mimic** — имена переменных/модулей для экспорта.
- * * *String* **jsAttrName** — атрибут блока с параметрами инициализации. По умолчанию — `data-bem`.
- * * *String* **jsAttrScheme** — Cхема данных для параметров инициализации. По умолчанию — `json`.
- * *                             Форматы:
- * *                                `js` — Получаем `return { ... }`.
- * *                                `json` — JSON-формат. Получаем `{ ... }`.
- *
- * * *String|Boolean* **jsCls** — имя `i-bem` CSS-класса. По умолчанию - `i-bem`. Для того, чтобы класс
- *    не добавлялся, следует указать значение `false` или пустую строку.
- *
- * * *Boolean* **escapeContent** — экранирование содержимого. По умолчанию - `false`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([require('enb-bem-i18n/techs/bh-bundle-i18n', { lang: {lang} }]));
- * ```
- */
-
 var vow = require('vow'),
     path = require('path'),
     asyncRequire = require('enb/lib/fs/async-require'),
@@ -45,6 +5,66 @@ var vow = require('vow'),
     keysets = require('../lib/keysets'),
     compile = require('../lib/compile');
 
+/**
+ * @class BHBundleI18nTech
+ * @augments {BHBundleTech}
+ * @classdesc
+ *
+ * Builds localized file with CommonJS requires for core and each BH template (`bh.js` files).<br/><br/>
+ *
+ * Localization is based on pre-built `?.keysets.{lang}.js` bundle files.<br/><br/>
+ *
+ * Use in browsers and on server side (Node.js).<br/><br/>
+ *
+ * The compiled BH module supports CommonJS and YModules. If there is no any modular system in the runtime,
+ * the module will be provided as global variable `BH`.<br/><br/>
+ *
+ * Important: do not use `require` in templates.
+ *
+ * @param {Object}      options                                        Options.
+ * @param {String}      [options.target='?.bh.{lang}.js']              Path to a target with compiled file.
+ * @param {String}      options.lang                                   Language identifier.
+ * @param {String}      [options.filesTarget='?.files']                Path to target with FileList.
+ * @param {String[]}    [options.sourceSuffixes='bh.js']               Files with specified suffixes involved
+ *                                                                     in the assembly.
+ * @param {Object}      [options.requires]                             Names for dependencies to `BH.lib.name`.
+ * @param {String[]}    [options.mimic]                                Names for export.
+ * @param {String}      [options.scope='template']                     Scope of templates execution.
+ * @param {Boolean}     [options.sourcemap=false]                      Includes inline source maps.
+ * @param {String}      [options.jsAttrName='data-bem']                Sets `jsAttrName` option for BH core.
+ * @param {String}      [options.jsAttrScheme='json']                  Sets `jsAttrScheme` option for BH core.
+ * @param {String}      [options.jsCls='i-bem']                        Sets `jsCls` option for BH core.
+ * @param {Boolean}     [options.jsElem=true]                          Sets `jsElem` option for BH core.
+ * @param {Boolean}     [options.escapeContent=false]                  Sets `escapeContent` option for BH core.
+ * @param {Boolean}     [options.clsNobaseMods=false]                  Sets `clsNobaseMods` option for BH core.
+ * @param {String}      [options.keysetsFile='?.keysets.{lang}.js']    Path to a source keysets file.
+ *
+ * @example
+ * var BHBundleI18nTech = require('enb-bh/techs/bh-bundle'),
+ *     FileProvideTech = require('enb/techs/file-provider'),
+ *     bem = require('enb-bem-techs');
+ *
+ * module.exports = function(config) {
+ *     config.node('bundle', function(node) {
+ *         // get FileList
+ *         node.addTechs([
+ *             [FileProvideTech, { target: '?.bemdecl.js' }],
+ *             [bem.levels, levels: ['blocks']],
+ *             bem.deps,
+ *             bem.files
+ *         ]);
+ *
+ *         // collect and merge keysets files into bundle
+ *         node.addTechs([
+ *            [ Keysets, { lang: '{lang}' } ]
+ *         ]);
+ *
+ *         // build localized BH file for given {lang}
+ *         node.addTech([ BHBundleI18nTech, { lang: '{lang}' } ]);
+ *         node.addTarget('?.bh.{lang}.js');
+ *     });
+ * };
+ */
 module.exports = require('enb-bh/techs/bh-bundle').buildFlow()
     .name('bh-bundle-i18n')
     .target('target', '?.bh.{lang}.js')
