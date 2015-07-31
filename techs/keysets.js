@@ -1,29 +1,47 @@
-/**
- * keysets
- * ==================
- *
- * Собирает `?.keysets.<язык>.js`-файлы на основе `*.i18n`-папок для указанных языков.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTechs([
- *   [ require('enb-bem-i18n/techs/keysets'), { lang: '{lang}' } ]
- * ]);
- * ```
- */
-
 var path = require('path'),
     vow = require('vow'),
     serialize = require('serialize-javascript'),
     asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache');
 
+/**
+ * @class KeysetsTech
+ * @augments {BaseTech}
+ * @classdesc
+ *
+ * Collects and merges `?.keysets.{lang}.js` files based on files from `*.i18n` folders for given languages.<br/><br/>
+ *
+ * @param {Object}   options                                   Options.
+ * @param {String}   [options.target='?.keysets.{lang}.js']    Path to a target with compiled file.
+ * @param {String}   options.lang                              Language identifier.
+ *
+ * @example
+ * var BemhtmlTech = require('enb-bemhtml/techs/bemhtml'),
+ *     FileProvideTech = require('enb/techs/file-provider'),
+ *     Keysets = require('enb-bem-i18n/techs/keysets'),
+ *     bem = require('enb-bem-techs');
+ *
+ * module.exports = function(config) {
+ *    config.node('bundle', function(node) {
+ *        // get BEMJSON file
+ *        node.addTech([FileProvideTech, { target: '?.bemjson.js' }]);
+ *
+ *        // get FileList
+ *        node.addTechs([
+ *            [bem.levels, levels: ['blocks']],
+ *            bem.bemjsonToBemdecl,
+ *            bem.deps,
+ *            bem.files
+ *        ]);
+ *
+ *        // collect and merge keysets files into bundle
+ *        node.addTechs([
+ *          [ Keysets, { lang: 'all' } ],
+ *          [ Keysets, { lang: '{lang}' } ]
+ *        ]);
+ *    });
+ * };
+ */
 module.exports = require('enb/lib/build-flow.js').create()
     .name('i18n-merge-keysets')
     .target('target', '?.keysets.{lang}.js')

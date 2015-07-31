@@ -1,25 +1,3 @@
-/**
- * i18n-js
- * ============
- *
- * Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
- *
- * Используется для локализации в JS с помощью BEM.I18N.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.lang.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTechs([
- *   [ require('enb-bem-i18n/techs/i18n-js'), { lang: 'all'} ],
- *   [ require('enb-bem-i18n/techs/i18n-js'), { lang: '{lang}'} ],
- * ]);
- * ```
- */
 var EOL = require('os').EOL,
     path = require('path'),
     asyncRequire = require('enb/lib/fs/async-require'),
@@ -27,6 +5,52 @@ var EOL = require('os').EOL,
     keysets = require('../lib/keysets'),
     compile = require('../lib/compile');
 
+/**
+ * @class I18nTech
+ * @augments {BaseTech}
+ * @classdesc
+ *
+ * Builds `?.lang.{lang}.js` from `?.keysets.{lang}.js` bundle files.<br/><br/>
+ *
+ * @param {Object}   options                                        Options.
+ * @param {String}   [options.target='?.lang.{lang}.js']            Path to a target with compiled file.
+ * @param {String}   options.lang                                   Language identifier.
+ * @param {String}   [options.keysetsFile='?.keysets.{lang}.js']    Path to a source keysets file.
+ *
+ * @example
+ * var BemhtmlTech = require('enb-bemhtml/techs/bemhtml'),
+ *     FileProvideTech = require('enb/techs/file-provider'),
+ *     Keysets = require('enb-bem-i18n/techs/keysets'),
+ *     I18n = require('enb-bem-i18n/techs/i18n-js'),
+ *     bem = require('enb-bem-techs');
+ *
+ * module.exports = function(config) {
+ *    config.node('bundle', function(node) {
+ *        // get BEMJSON file
+ *        node.addTech([FileProvideTech, { target: '?.bemjson.js' }]);
+ *
+ *        // get FileList
+ *        node.addTechs([
+ *            [bem.levels, levels: ['blocks']],
+ *            bem.bemjsonToBemdecl,
+ *            bem.deps,
+ *            bem.files
+ *        ]);
+ *
+ *        // collect and merge keysets files into bundle
+ *        node.addTechs([
+ *          [ Keysets, { lang: 'all' } ],
+ *          [ Keysets, { lang: '{lang}' } ]
+ *        ]);
+ *
+ *        // make lang.{lang}.js bundle files from keysets bundle files
+ *        node.addTechs([
+ *          [ I18n, { lang: 'all' } ],
+ *          [ I18n, { lang: '{lang}' } ]
+ *        ]);
+ *    });
+ * };
+ */
 module.exports = require('enb/lib/build-flow').create()
     .name('i18n')
     .target('target', '?.lang.{lang}.js')

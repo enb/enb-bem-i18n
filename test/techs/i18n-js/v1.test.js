@@ -2,7 +2,7 @@ var fs = require('fs'),
     path = require('path'),
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../../techs/i18n-js'),
     core;
@@ -100,7 +100,7 @@ describe('i18n-js v1', function () {
                 }
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.lang.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
@@ -140,7 +140,7 @@ describe('i18n-js v1', function () {
                 }
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.lang.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
@@ -176,7 +176,7 @@ function build(keysets) {
         }
     });
 
-    var bundle = new TestNode('bundle');
+    var bundle = new MockNode('bundle');
 
     return bundle.runTechAndRequire(Tech, { lang: 'lang' })
         .spread(function (i18n) {

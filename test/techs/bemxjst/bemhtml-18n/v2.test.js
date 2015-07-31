@@ -2,7 +2,7 @@ var path = require('path'),
     fs = require('fs'),
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../../../techs/bemxjst/bemhtml-i18n'),
@@ -148,7 +148,7 @@ describe('bemxjst bemhtml-i18n v2', function () {
                 }
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.bemhtml.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
@@ -211,7 +211,7 @@ describe('bemxjst bemhtml-i18n v2', function () {
                 }
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.bemhtml.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
@@ -279,7 +279,7 @@ function build(keysets) {
         }
     });
 
-    var bundle = new TestNode('bundle'),
+    var bundle = new MockNode('bundle'),
         fileList = new FileList();
 
     fileList.loadFromDirSync('blocks');

@@ -3,7 +3,7 @@ var fs = require('fs'),
     inspect = require('util').inspect,
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../techs/keysets');
@@ -573,7 +573,7 @@ describe('i18n-merge-keysets', function () {
                 bundle: {}
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 dirname = path.resolve('blocks'),
                 fileList = new FileList(),
                 dirList = new FileList();
@@ -614,7 +614,7 @@ describe('i18n-merge-keysets', function () {
                 bundle: {}
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.keysets.lang.js'),
                 dirname = path.resolve('blocks'),
                 basename = 'block.i18n.js',
@@ -665,7 +665,7 @@ function assert(keysets, expected, opts) {
         filenames = Object.keys(keysets).filter(function (basename) {
             return path.extname(basename) === '.js';
         }),
-        bundle = new TestNode('bundle'),
+        bundle = new MockNode('bundle'),
         fileList = new FileList(),
         dirList = new FileList(),
         root = 'blocks',

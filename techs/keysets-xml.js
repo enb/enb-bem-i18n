@@ -1,28 +1,55 @@
-/**
- * keysets-xml
- * ================
- *
- * Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
- *
- * Используется для локализации xml-страниц.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('keysets-xml'), { lang: '{lang}' } ]);
- * ```
- */
 var EOL = require('os').EOL,
     path = require('path'),
     domjs = require('dom-js'),
     asyncRequire = require('enb/lib/fs/async-require'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache');
 
+/**
+ * @class KeysetsXMLTech
+ * @augments {BaseTech}
+ * @classdesc
+ *
+ * Builds `?.keysets.{lang}.xml` from `?.keysets.{lang}.js` bundle files.<br/><br/>
+ *
+ * @param {Object}   options                                        Options.
+ * @param {String}   [options.target='?.keysets.{lang}.xml']        Path to a target with compiled file.
+ * @param {String}   options.lang                                   Language identifier.
+ * @param {String}   [options.keysetsTarget='?.keysets.{lang}.js']  Path to a source keysets file.
+ *
+ * @example
+ * var BemhtmlTech = require('enb-bemhtml/techs/bemhtml'),
+ *     FileProvideTech = require('enb/techs/file-provider'),
+ *     Keysets = require('enb-bem-i18n/techs/keysets'),
+ *     KeysetsXML = require('enb-bem-i18n/techs/keysets-xml'),
+ *     bem = require('enb-bem-techs');
+ *
+ * module.exports = function(config) {
+ *    config.node('bundle', function(node) {
+ *        // get BEMJSON file
+ *        node.addTech([FileProvideTech, { target: '?.bemjson.js' }]);
+ *
+ *        // get FileList
+ *        node.addTechs([
+ *            [bem.levels, levels: ['blocks']],
+ *            bem.bemjsonToBemdecl,
+ *            bem.deps,
+ *            bem.files
+ *        ]);
+ *
+ *        // collect and merge keysets files into bundle
+ *        node.addTechs([
+ *          [ Keysets, { lang: 'all' } ],
+ *          [ Keysets, { lang: '{lang}' } ]
+ *        ]);
+ *
+ *        // make *.xml keysets files
+ *        node.addTechs([
+ *          [ KeysetsXML, { lang: 'all' } ],
+ *          [ KeysetsXML, { lang: '{lang}' } ]
+ *        ]);
+ *    });
+ * };
+ */
 module.exports = require('enb/lib/build-flow').create()
     .name('keysets-xml')
     .target('target', '?.keysets.{lang}.xml')

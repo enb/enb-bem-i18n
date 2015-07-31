@@ -3,7 +3,7 @@ var EOL = require('os').EOL,
     fs = require('fs'),
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../../techs/bh-commonjs-i18n'),
@@ -141,7 +141,7 @@ describe('bh-commonjs-i18n v2', function () {
                 }
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.bh.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
@@ -206,7 +206,7 @@ describe('bh-commonjs-i18n v2', function () {
                 }
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.bh.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
@@ -283,7 +283,7 @@ function build(keysets) {
 
     mock(scheme);
 
-    var bundle = new TestNode('bundle'),
+    var bundle = new MockNode('bundle'),
         fileList = new FileList();
 
     fileList.loadFromDirSync('blocks');

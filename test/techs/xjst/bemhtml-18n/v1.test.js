@@ -2,7 +2,7 @@ var path = require('path'),
     fs = require('fs'),
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
-    TestNode = require('enb/lib/test/mocks/test-node'),
+    MockNode = require('mock-enb/lib/mock-node'),
     FileList = require('enb/lib/file-list'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../../../techs/xjst/bemhtml-i18n'),
@@ -12,7 +12,7 @@ var path = require('path'),
 describe('xjst bemhtml-i18n v1', function () {
     before(function () {
         var coreFilename = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js',
-            bemhtmlFilename = require.resolve('bem-bl-xjst/i-bem__html.bemhtml');
+            bemhtmlFilename = require.resolve('enb-xjst/node_modules/bem-bl-xjst/i-bem__html.bemhtml');
         core = fs.readFileSync(path.resolve(coreFilename), { encoding: 'utf-8' });
         bemhtmlContents = fs.readFileSync(bemhtmlFilename, { encoding: 'utf-8' });
     });
@@ -130,7 +130,7 @@ describe('xjst bemhtml-i18n v1', function () {
                 }
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.bemhtml.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
@@ -188,7 +188,7 @@ describe('xjst bemhtml-i18n v1', function () {
                 }
             });
 
-            var bundle = new TestNode('bundle'),
+            var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.bemhtml.lang.js'),
                 basename = 'bundle.keysets.lang.js',
                 filename = path.resolve('bundle', basename);
@@ -246,7 +246,7 @@ function build(keysets) {
         }
     });
 
-    var bundle = new TestNode('bundle'),
+    var bundle = new MockNode('bundle'),
         fileList = new FileList();
 
     fileList.loadFromDirSync('blocks');
