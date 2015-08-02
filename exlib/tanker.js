@@ -1,408 +1,190 @@
+var sax = require('./sax');
+
 /**
- * --- (C) Original BEM Tools
+ * Надстройка над функцией translate для обратной совместимости.
+ * Внимание. Интерфейс с колбеком _синхронный_, это не ошибка.
  *
- * Инструментарий для работы с танкером.
- * Заимствованный.
+ * @param {String|String[]} raw Ключ
+ * @param {Function} [callback] Колбек
+ * @return {String}
  */
-
-var DOM = require('dom-js');
-
-var QUOTE_CHAR = '"';
-var SINGLE_QUOTE_CHAR = '\'';
-
-var isArray = Array.isArray;
-
-var isJson = function (obj) {
-    try {
-        if (isString(obj)) {
-            var jsonStart = obj.trim().charAt(0);
-            if (jsonStart === '{' || jsonStart === '[') {
-                return JSON.parse(obj);
-            }
-        }
-        return false;
-    } catch (e) {
-        return false;
-    }
-};
-
-var isString = function (str) {
-    return typeof str === 'string';
-};
-
-var isSimple = function (obj) {
-    var type = typeof obj;
-    return type === 'string' || type === 'number';
-};
-
-var parseXml = exports.parseXml = function (xml, cb) {
-    if (!isSimple(xml)) {
-        xml = JSON.stringify(xml);
-    }
-
-    try {
-        new DOM.DomJS().parse('<root>' + xml + '</root>', function (err, dom) {
-            if (err) {
-                return;
-            }
-            cb(dom.children);
-        });
-    } catch (e) {
-        parseXml(DOM.escape(xml), cb);
-    }
-};
-
-var domToJs = exports.domToJs = function (nodes) {
-    var code = expandNodes(toCommonNodes(nodes), jsExpander);
-
-    if (code.length === 0) {
-        return '\'\'';
+module.exports.xmlToJs = function (raw, callback) {
+    if (callback) {
+        callback(translate(raw));
     } else {
-        var firstLine = code[0];
-        var firstChar = firstLine.charAt(0);
-        if (code.length === 1 && (firstChar === QUOTE_CHAR || firstChar === SINGLE_QUOTE_CHAR)) {
-            return firstLine;
-        } else {
-            return 'function (params) { return ' + code.join(' + ') + ' }';
-        }
+        return translate(raw);
     }
 };
 
-exports.xmlToJs = function (xml, cb) {
-
-    parseXml(xml, function (nodes) {
-        cb(domToJs(nodes));
-    });
-
-};
-
 /**
- * @param {Array|String|Number} node
- * @param {Function} expanderFn
+ * Метод преобразует XML-строку с «танкерной» разметкой
+ * в JS, пригодный для использования в декларациях BEM.I18N.
+ *
+ * @param {String|String[]} raw Ключ
+ * @return {String}
  */
-function expandNodes(node, expanderFn) {
+function translate(raw) {
+    var key = normalize(raw);
 
-    if (isSimple(node)) {
-        return node;
+    // Нет смысла запускать тяжелый парсер,
+    // если в строке нет признаков танкерной разметки или мнемоник.
+    if (!/(<i18n:)|(&)/i.test(key)) {
+        return JSON.stringify(key);
     }
 
-    return node.map(function (item) {
-        return isSimple(item) ? item : expanderFn(item);
-    });
-
-}
-
-/**
- * @param {Array} node
- * @returns {String}
- */
-function jsExpander(node, _raw) {
-
-    if (_raw == null) {
-        _raw = false;
-    }
-
-    var currentExpander = function (node) {
-            return jsExpander(node, _raw);
-        };
-    var rawExpander = function (node) {
-            return jsExpander(node, true);
-        };
-
-    if (!node) {
-        // FIXME: should we throw?
-        console.warn('[WARN]: Undefined item');
-        return '';
-    }
-
-    var nodeclass = node.pop();
-    var code;
-
-    switch (nodeclass) {
-
-    case 'TANKER_DYNAMIC':
-        // [ keyset, key, [params] ]
-        code = expandNodes(node, currentExpander);
-        return 'this.keyset(\'' + code[0] + '\').key(\'' + code[1] + '\', ' + (code[2] || '{}') + ')';
-
-    case 'JS_DYNAMIC':
-        // [ code ]
-        code = '(function(params) { ' + expandNodes(node[0], rawExpander).join('') + ' }).call(this, params);';
-        return code;
-
-    case 'XSL_DYNAMIC':
-        // [ code ]
-        return '';
-
-    case 'XML':
-        // [ tag, attrs, [content] ]
-        var tag = node[0];
-        var attrs = node[1];
-        var prop = [];
-        var s = '';
-        var t;
-        var c;
-
-        code = [];
-
-        for (c in attrs) {
-            prop.push([c, SINGLE_QUOTE_CHAR + attrs[c] + SINGLE_QUOTE_CHAR].join('='));
-        }
-        prop = prop.length ? jsQuote(' ' + prop.join(' ')) : '';
-
-        c = '';
-        t = '"<' + tag + prop;
-
-        if (node[2].length) {
-            s = ' + ';
-
-            t += '>"';
-            code.push(t);
-
-            c = expandNodes(node[2], currentExpander);
-            isArray(c) || (c = [c]);
-            [].push.apply(code, c);
-
-            code.push(t = '"</' + tag + '>"');
-        } else {
-            t += '/>"';
-            code.push(t);
-        }
-
-        return code.join(s);
-
-    case 'PARAMS':
-        // [ [params] ]
-        return '{ ' + expandNodes(node, currentExpander).join(', ') + ' } ';
-
-    case 'PARAM':
-        // [ name, [code] ]
-        code = expandNodes(node[1], currentExpander);
-        return [node[0], isArray(code) ? code.join(' + ') : code].join(': ');
-
-    case 'PARAM-CALL':
-        // [ key ]
-        return 'params[' + node[0] + ']';
-
-    case 'TEXT':
-        // [ text ]
-        return _raw ? node[0] : SINGLE_QUOTE_CHAR + jsQuote(node[0]) + SINGLE_QUOTE_CHAR;
-
-    default:
-        throw new Error('Unexpected item type: ' + nodeclass);
-
-    }
-
-}
-
-/**
- * @param {Node[]} nodes
- * @returns {AST}
- */
-function toCommonNodes(nodes) {
-
-    var code = [];
-
-    nodes.forEach(function (node) {
-        if (node.name) {
-            code.push(_node(node));
-        } else if (node.text) {
-            var text = _json(node.text);
-            if (text) {
-                code.push(text);
-            }
-        }
-    });
-
-    return code;
-
-}
-
-/**
- * @param {Object|Node} str
- * @returns {AST|String}
- */
-function _text(str) {
-
-    if (!isSimple(str)) {
-        return '';
-    }
-
-    str = str.replace(/\n\s\s+/g, '\n ');
-
-    if (!str.length) {
-        return '';
-    }
-
-    return [str, 'TEXT'];
-
-}
-
-/**
- * @returns {AST}
- */
-function _empty() {
-    return ['', 'TEXT'];
-}
-
-/**
- * @param {Node} node
- * @returns {AST}
- */
-function _node(node) {
-
-    var name = node.name;
-    switch (name) {
-
-    case 'i18n:dynamic':
-        var attrs = node.attributes;
-        if (attrs && attrs.key) {
-            // tanker dynamic
-            var keyset = _keyset(attrs);
-            var params = _params(node.children);
-
-            return [keyset, attrs.key, params, 'TANKER_DYNAMIC'];
-
-        }
-
-        // custom
-        return _dynamic(node.children);
-
-    case 'i18n:param':
-        if (node.firstChild()) {
-            return _paramCall(node.children[0]);
-        }
-
-    }
-
-    if (!~name.indexOf(':')) {
-        return _xml(node);
-    }
-
-}
-
-/**
- * @param {Node} node
- * @returns {AST}
- */
-function _xml(node) {
-    return [node.name, node.attributes, toCommonNodes(node.children), 'XML'];
-}
-
-/**
- * @param {Array|Object} nodes
- * @returns {AST}
- */
-function _json(nodes) {
-
-    var json;
-    if (!(json = isJson(nodes))) {
-        return _text(nodes);
-    }
-
-    if (isArray(json)) {
-        // FIXME: array should always produce `plural_adv`?
-        // FIXME: `none` value for json
-        var params = [
-                ['"count"', [ ['"count"', 'PARAM-CALL'] ], 'PARAM']
-            ]
-            .concat(['one', 'some', 'many', 'none'].map(function (p, i) {
-                return [quotify(p), quotify(json[i] || ''), 'PARAM'];
-            }));
-
-        params.push('PARAMS');
-
-        // FIXME: hardcode
-        return ['i-tanker__dynamic', 'plural_adv', params, 'TANKER_DYNAMIC'];
-    }
-
-    return _text(nodes.toString());
-
-}
-
-/**
- * @param {Node[]} nodes
- * @returns {AST}
- */
-function _dynamic(nodes) {
-
-    var code = [];
-
-    nodes.forEach(function (node) {
-        var name = node.name;
-
-        if (name === 'i18n:js') {
-            code.push([toCommonNodes(node.children), 'JS_DYNAMIC']);
-        //} else if (name === 'i18n:xsl') {
-        //    code.push([toCommonNodes(node.children), 'XSL_DYNAMIC']);
-        }
-
-    });
-
-    return code.length === 1 ? code[0] : code;
-
-}
-
-/**
- * @param {Node[]} nodes
- * @returns {AST}
- */
-function _params(nodes) {
-
-    var params = [];
-
-    nodes.forEach(function (node) {
-        if (!node.name) {
+    var parser = sax.parser(),
+        tree = new Tree();
+
+    parser.ontext = function (text) {
+        // Текст внутри <i18n:dynamic> незначимый (пробелы, переносы строк).
+        if (tree.context.type === 'dynamic' || tree.context.type === 'dynamic_bare') {
             return;
+        // Текст внутри <i18n:js> это кодовый сниппет, не должен быть обернут в кавычки.
         }
-        params.push(_param(node));
-    });
+        if (tree.context.type === 'js') {
+            tree.pushText(text);
+        // В остальных случаях это текстовый чанк.
+        } else {
+            tree.pushText(JSON.stringify(text));
+        }
+    };
+    parser.onopentag = function (tag) {
+        var name = tag.name,
+            attr = tag.attributes;
 
-    params.push('PARAMS');
+        if (name === 'I18N:PARAM') {
+            tree.pushNode('param');
+        } else if (name === 'I18N:DYNAMIC') {
+            if (attr.KEYSET && attr.KEY) {
+                tree.pushNode('dynamic', {
+                    key: attr.KEY.toLowerCase(),
+                    keyset: ((attr.PROJECT ? 'i-' + attr.PROJECT + '__' : '') + attr.KEYSET).toLowerCase()
+                });
+            } else {
+                tree.pushNode('dynamic_bare');
+            }
+        // <i18n:js> рассматривается особым образом только в контексте пустого <i18n:dynamic>.
+        } else if (name === 'I18N:JS' && tree.context.type === 'dynamic_bare') {
+            tree.pushNode('js');
+        } else if (tree.context.type === 'dynamic') {
+            tree.pushNode('property', {
+                name: name.split(':').pop().toLowerCase()
+            });
+        } else {
+            tree.pushNode('wtf');
+        }
+    };
+    parser.onclosetag = function () {
+        // Пустые теги следует воспринимать как теги, содержащие пустую строку.
+        if (!tree.context.body.length) {
+            parser.ontext('');
+        }
+        tree.stepBack();
+    };
 
-    return params;
+    // Пустой комментарий, чтобы парсер не игнорировал пробелы в начале строки.
+    parser.write('<!---->' + key).close();
 
+    return tree.toString();
 }
 
-/**
- * @param {Node} param
- * @returns {AST}
- */
-function _param(param) {
-    var name = param.name.replace(/i18n:/, '');
-    var val = toCommonNodes(param.children);
-
-    val.length || val.push(_empty());
-
-    return [JSON.stringify(name), val, 'PARAM'];
+function Tree() {
+    this.tree = {
+        type: null,
+        body: [],
+        data: {},
+        parent: null
+    };
+    this.context = this.tree;
 }
 
-/**
- * @param {Node} param
- * @returns {AST}
- */
-function _paramCall(param) {
-    return [JSON.stringify(param.text), 'PARAM-CALL'];
-}
+Tree.prototype = {
+    pushText: function (text) {
+        this.context.body.push(text);
+    },
+    pushNode: function (type, data) {
+        var node = {
+            type: type || 'wtf',
+            body: [],
+            data: data || {},
+            parent: this.context
+        };
 
-/**
- * @param {Node} param
- * @returns {String}
- */
-function _keyset(param) {
-    // FIXME: get rid of Yandex.Tanker specifics
-    return ((param.project && param.project === 'tanker') ? 'i-' + param.project + '__' : '') + param.keyset;
-}
+        this.context.body.push(node);
+        this.context = node;
 
-/** Helpers **/
+        if (!this.tree.type && node.type !== 'wtf') {
+            this.tree.type = 'parametrized';
+        }
+    },
+    stepBack: function () {
+        this.context = this.context.parent;
+    },
+    tmpl: {
+        skip: ['${body}', ''],
+        parametrized: ['function(params) { return ${body} }', ' + '],
+        param: ['params[${body}]', ' + '],
+        dynamic: ['this.keyset("${keyset}").key("${key}", {${body}})', ', '],
+        property: ['"${name}": ${body}', ' + '],
+        js: ['(function(params) { ${body} }).call(this, params)', '']
+    },
+    toString: function () {
+        var node = arguments[0] || this.tree,
+            tmpl = this.tmpl[node.type] || this.tmpl.skip,
+            result;
 
-function jsQuote(s) {
-    return '' + s.replace(/([\\\/\'\r\n])/g, '\\$1');
-}
+        if (!Array.isArray(node.body)) {
+            result = node;
+        } else {
+            var chunkTmpl = tmpl[0],
+                separator = tmpl[1];
 
-function quotify(str) {
-    if (isString(str)) {
-       return QUOTE_CHAR + str + QUOTE_CHAR;
+            result = fill(chunkTmpl, extend(node.data, {
+                body: node.body.filter(function (item) {
+                    return item.type !== 'wtf';
+                }).map(this.toString, this).join(separator)
+            }));
+        }
+
+        return result || JSON.stringify('');
     }
-    return str;
+};
+
+/**
+ * Нормализация состоит в том, чтобы массив, элементы которого представляют
+ * формы склоняемого ключа (мы считаем, что массив всегда имеет такой смысл),
+ * заменить на соответствующий XML.
+ *
+ * Если передан не массив, то аргумент просто приводится к строке.
+ *
+ * @param {*} raw
+ * @return {String}
+ */
+function normalize(raw) {
+    return Array.isArray(raw) ? getPluralKey(raw) : String(raw);
+}
+
+function getPluralKey(arr) {
+    return fill([
+        '<i18n:dynamic project="tanker" keyset="dynamic" key="plural_adv">',
+        '<i18n:count><i18n:param>count</i18n:param></i18n:count>',
+        '<i18n:one>${0}</i18n:one>',
+        '<i18n:some>${1}</i18n:some>',
+        '<i18n:many>${2}</i18n:many>',
+        '<i18n:none>${3}</i18n:none>',
+        '</i18n:dynamic>'
+    ].join(''), arr);
+}
+
+function extend(base, supp) {
+    return Object.keys(supp).reduce(function (base, key) {
+        base[key] = supp[key];
+        return base;
+    }, base);
+}
+
+function fill(str, obj) {
+    return str.replace(/\${(\w+)}/g, function (match, name) {
+        return obj[name] || '';
+    });
 }

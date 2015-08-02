@@ -1,4 +1,9 @@
 {
+    "globals": {
+        "describe": false,
+        "it": false
+    },
+
     "bitwise": true,
     "curly": true,
     "eqeqeq": true,

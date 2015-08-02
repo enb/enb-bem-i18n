@@ -1,8 +1,8 @@
 module.exports = {
     excludeFiles: [
         'node_modules',
-        'exlib',
-        'coverage'
+        'coverage',
+        'exlib/sax.js'
     ],
     requireSpaceAfterKeywords: ['if', 'else', 'for', 'while', 'do', 'switch', 'return', 'try', 'catch'],
     requireSpaceBeforeBlockStatements: true,
