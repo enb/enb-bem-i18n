@@ -3,8 +3,7 @@ module.exports = {
         'node_modules',
         'exlib',
         'coverage',
-        'test/fixtures/*',
-        'test/exlib'
+        'test/fixtures/*'
     ],
     requireSpaceAfterKeywords: ['if', 'else', 'for', 'while', 'do', 'switch', 'return', 'try', 'catch'],
     requireSpaceBeforeBlockStatements: true,
