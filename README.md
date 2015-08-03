@@ -25,8 +25,6 @@ npm install --save-dev enb-bem-i18n
 * [i18n-js](#i18n-js)
 * [keysets](#keysets)
 * [keysets-xml](#keysets-xml)
-* [bh-bundle-i18n](#bh-bundle-i18n)
-* [bemhtml-i18n](#bemhtml-i18n)
 
 ### i18n-js
 
@@ -81,90 +79,6 @@ nodeConfig.addTechs([
 
 ```javascript
 nodeConfig.addTech(require('enb-bem-i18n/techs/keysets-xml'));
-```
-
-### bh-bundle-i18n
-
-Собирает *BH*-файлы по deps'ам в виде `?.bh.js` бандла на основе `?.keysets.<язык>.js`-файла.
-
-Предназначен для сборки как клиентского, так и серверного BH-кода. Предполагается, что в *BH*-файлах не используется `require`.
-
-Поддерживает CommonJS и YModules. Если в исполняемой среде нет ни одной модульной системы, то модуль будет предоставлен в глобальную переменную `bh`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.bh.js`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-* *String* **keysetsFile** — Исходный keysets-файл. По умолчанию — `?.keysets.{lang}.js`. (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — ['bh.js'].
-* *Boolean* **sourcemap** — строить карты кода.
-* *String|Array* **mimic** — имена переменных/модулей для экспорта.
-* *String* **jsAttrName** — атрибут блока с параметрами инициализации. По умолчанию — `data-bem`.
-* *String* **jsAttrScheme** — Cхема данных для параметров инициализации. По умолчанию — `json`. Форматы: `js` — Получаем `return { ... }`. `json` — JSON-формат. Получаем `{ ... }`.
-* *String|Boolean* **jsCls** — имя `i-bem` CSS-класса. По умолчанию - `i-bem`. Для того, чтобы класс не добавлялся, следует указать значение `false` или пустую строку.
-* *Boolean* **escapeContent** — экранирование содержимого. По умолчанию - `false`.
-
-**Пример**
-```javascript
-nodeConfig.addTech(require('enb-bem-i18n/techs/bh-bundle-i18n'));
-```
-
-### bh-commonjs-i18n
-
-Собирает *BH*-файлы по deps'ам в виде `?.bh.js` бандла на основе `?.keysets.<язык>.js`-файла.
-
-Предназначен для сборки только серверного BH-кода. Предполагается, что в *BH*-файлах используется `require`.
-
-Поддерживает только CommonJS.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.bh.js`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-* *String* **keysetsFile** — Исходный keysets-файл. По умолчанию — `?.keysets.{lang}.js`. (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — ['bh.js'].
-* *Boolean* **sourcemap** — строить карты кода.
-* *String|Array* **mimic** — имена переменных/модулей для экспорта.
-* *String* **jsAttrName** — атрибут блока с параметрами инициализации. По умолчанию — `data-bem`.
-* *String* **jsAttrScheme** — Cхема данных для параметров инициализации. По умолчанию — `json`. Форматы: `js` — Получаем `return { ... }`. `json` — JSON-формат. Получаем `{ ... }`.
-* *String|Boolean* **jsCls** — имя `i-bem` CSS-класса. По умолчанию - `i-bem`. Для того, чтобы класс не добавлялся, следует указать значение `false` или пустую строку.
-* *Boolean* **escapeContent** — экранирование содержимого. По умолчанию - `false`.
-
-**Пример**
-```javascript
-nodeConfig.addTech(require('enb-bem-i18n/techs/bh-сommonjs-i18n'));
-```
-
-### bemhtml-i18n
-
-Собирает `?.bemhtml.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файла и исходных шаблонов.
-
-Склеивает *bemhtml.xjst* и *bemhtml*-файлы по deps'ам, обрабатывает `bem-xjst` или `xjst` -транслятором,  сохраняет (по умолчанию) в виде `?.bemhtml.js`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.bemhtml.js`.
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-* *String* **keysetsFile** — Исходный keysets-файл. По умолчанию — `?.keysets.{lang}.js`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['bemhtml', 'bemhtml.xjst']`.
-* *String* **exportName** — Имя переменной-обработчика BEMHTML. По умолчанию — `'BEMHTML'`.
-* *Boolean* **devMode** — Development-режим. По умолчанию — true.
-* *Boolean* **cache** — Кэширование. Возможно только в production-режиме. По умолчанию — `false`.
-* *Object* **modulesDeps** — Хэш-объект, прокидывающий в генерируемую для скомпилированных шаблонов обвязку, необходимые YModules-модули.
-
-**Пример**
-
-Для bemxjst:
-```javascript
-nodeConfig.addTech([ require('enb-bem-i18n/techs/bemxjst/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
-```
-
-Для xjst:
-```javascript
-nodeConfig.addTech([ require('enb-bem-i18n/techs/xjst/bemhtml-i18n'), { lang: {lang}, devMode: false } ]);
 ```
 
 Лицензия
