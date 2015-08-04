@@ -34,18 +34,18 @@
   },
   "dependencies": {
     "dom-js": "0.0.9",
-    "vow": "0.4.9"
+    "vow": "0.4.10"
   },
   "devDependencies": {
     "enb": ">= 0.11.0 < 1.0.0",
-    "istanbul": "0.3.14",
+    "istanbul": "0.3.17",
     "jscs": "1.13.1",
-    "jshint": "2.7.0",
+    "jshint": "2.8.0",
     "mocha": "2.2.5",
-    "mock-enb": "0.0.1",
-    "mock-fs": "2.7.0",
+    "mock-enb": "0.1.0",
+    "mock-fs": "3.0.0",
     "must": "0.12.0",
-    "chai": "2.2.0"
+    "chai": "3.2.0"
   },
   "scripts": {
     "test": "npm run lint && npm run unit",
