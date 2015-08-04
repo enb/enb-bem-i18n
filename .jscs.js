@@ -1,8 +1,8 @@
 module.exports = {
     excludeFiles: [
         'node_modules',
-        'exlib',
         'coverage',
+        'exlib/sax.js',
         'test/fixtures/*'
     ],
     requireSpaceAfterKeywords: ['if', 'else', 'for', 'while', 'do', 'switch', 'return', 'try', 'catch'],
