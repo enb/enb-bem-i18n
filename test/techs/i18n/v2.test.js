@@ -122,11 +122,13 @@ describe('i18n v2 (bem-core)', function () {
             var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.lang.lang.js'),
                 basename = 'bundle.keysets.lang.js',
-                filename = path.resolve('bundle', basename);
+                relPath = path.join('bundle', basename),
+                cacheKey = 'keysets-file-' + relPath,
+                filename = path.resolve(relPath);
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keysets-file-' + basename, filename);
+            cache.cacheFileInfo(cacheKey, filename);
 
             mock({
                 bundle: {
@@ -162,11 +164,13 @@ describe('i18n v2 (bem-core)', function () {
             var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.lang.lang.js'),
                 basename = 'bundle.keysets.lang.js',
-                filename = path.resolve('bundle', basename);
+                relPath = path.join('bundle', basename),
+                cacheKey = 'keysets-file-' + relPath,
+                filename = path.resolve(relPath);
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keysets-file-' + basename, filename);
+            cache.cacheFileInfo(cacheKey, filename);
 
             mock({
                 bundle: {

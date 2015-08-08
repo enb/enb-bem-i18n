@@ -618,7 +618,9 @@ describe('i18n-merge-keysets', function () {
                 cache = bundle.getNodeCache('bundle.keysets.lang.js'),
                 dirname = path.resolve('blocks'),
                 basename = 'block.i18n.js',
-                filename = path.join(dirname, basename),
+                relPath = path.join('blocks', basename),
+                cacheKey = 'keysets-file-' + relPath,
+                filename = path.resolve(relPath),
                 fileList = new FileList(),
                 dirList = new FileList();
 
@@ -629,7 +631,7 @@ describe('i18n-merge-keysets', function () {
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keyset-file-' + basename, filename);
+            cache.cacheFileInfo(cacheKey, filename);
 
             mock({
                 blocks: {
