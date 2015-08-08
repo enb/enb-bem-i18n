@@ -75,10 +75,15 @@ module.exports = require('enb/lib/build-flow').create()
 
         return promise
             .then(function (sources) {
-                var parsed = keysets.parse(sources);
+                var parsed = keysets.parse(sources),
+                    opts = {
+                        version: parsed.version,
+                        language: this._lang
+                    };
+
                 return [
                     '(function (global) {',
-                    '    var __i18n__ = ' + compile(parsed, this._lang) + ',',
+                    '    var __i18n__ = ' + compile(parsed.core, parsed.keysets, opts) + ',',
                     '        defineAsGlobal = true;',
                     '',
                     '    // CommonJS',
