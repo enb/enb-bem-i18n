@@ -1,4 +1,4 @@
 node_modules
 coverage
-exlib/sax.js
+exlib
 test/fixtures

@@ -1,7 +1,7 @@
 // jscs:disable maximumLineLength
 var chai = require('chai'),
     assert = chai.assert,
-    xmlToJs = require('../../exlib/tanker.js').xmlToJs;
+    xmlToJs = require('../lib/tanker.js').xmlToJs;
 
 // assert.xmlToJs(a, b) ≡ assert.strictEqual(xmlToJs(a), b)
 chai.use(function (chai) {
