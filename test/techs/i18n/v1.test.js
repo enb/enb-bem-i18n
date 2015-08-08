@@ -4,10 +4,10 @@ var fs = require('fs'),
     serializeJS = require('serialize-javascript'),
     MockNode = require('mock-enb/lib/mock-node'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    Tech = require('../../../techs/i18n-js'),
+    Tech = require('../../../techs/i18n'),
     core;
 
-describe('i18n-js v1', function () {
+describe('i18n v1 (bem-bl)', function () {
     before(function () {
         var p = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js';
         core = fs.readFileSync(path.resolve(p), { encoding: 'utf-8' });
@@ -187,4 +187,3 @@ function build(keysets) {
 function serialize(js) {
     return 'module.exports = ' + serializeJS(js) + ';';
 }
-
