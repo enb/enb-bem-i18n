@@ -11,6 +11,16 @@ chai.use(function (chai) {
 });
 
 describe('tanker', function () {
+    it('callback', function (done) {
+        var raw = 'str',
+            expected = JSON.stringify(raw);
+
+        xmlToJs(raw, function (res) {
+            assert.strictEqual(res, expected);
+            done();
+        });
+    });
+
     // Строки без танкерного XML и мнемоник, а также некорректные типы данных.
     describe('простые формы ключей', function () {
         ([

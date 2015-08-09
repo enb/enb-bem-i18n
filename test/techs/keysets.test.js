@@ -452,7 +452,7 @@ describe('i18n-merge-keysets', function () {
                         }
                     }),
                     'block.i18n': {
-                        'lang.js': serialize({
+                        'alang.js': serialize({
                             scope: {
                                 key: 'val-3'
                             }
@@ -470,7 +470,7 @@ describe('i18n-merge-keysets', function () {
                     }
                 };
 
-            return assert(keysets, expected, { lang: 'lang' });
+            return assert(keysets, expected, { lang: 'alang' });
         });
 
         it('must merge keys', function () {
