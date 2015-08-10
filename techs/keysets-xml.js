@@ -1,8 +1,6 @@
 var EOL = require('os').EOL,
-    path = require('path'),
-    domjs = require('dom-js'),
-    asyncRequire = require('enb/lib/fs/async-require'),
-    dropRequireCache = require('enb/lib/fs/drop-require-cache');
+    keysets = require('../lib/keysets'),
+    domjs = require('dom-js');
 
 /**
  * @class KeysetsXMLTech
@@ -56,24 +54,7 @@ module.exports = require('enb/lib/build-flow').create()
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
     .builder(function (keysetsFilename) {
-        var node = this.node,
-            cache = node.getNodeCache(this._target),
-            basename = path.basename(keysetsFilename),
-            cacheKey = 'keysets-file-' + basename,
-            promise;
-
-        if (cache.needRebuildFile(cacheKey, keysetsFilename)) {
-            dropRequireCache(require, keysetsFilename);
-            promise = asyncRequire(keysetsFilename)
-                .then(function (keysets) {
-                    cache.cacheFileInfo(cacheKey, keysetsFilename);
-                    return keysets;
-                });
-        } else {
-            promise = asyncRequire(keysetsFilename);
-        }
-
-        return promise.then(function (keysets) {
+        return this._readKeysetsFile(keysetsFilename).then(function (keysets) {
             var lang = this._lang,
                 res = Object.keys(keysets).sort().reduce(function (prev, keysetName) {
                     var keyset = keysets[keysetName];
@@ -105,6 +86,20 @@ module.exports = require('enb/lib/build-flow').create()
         },
         getAppendXml: function () {
             return EOL + '</tanker>';
+        },
+        /**
+         * Reads file with keysets.
+         *
+         * @param {String} filename — path to file with keysets.
+         * @returns {Promise}
+         * @private
+         */
+        _readKeysetsFile: function (filename) {
+            var node = this.node,
+                root = node.getRootDir(),
+                cache = node.getNodeCache(this._target);
+
+            return keysets.read(filename, cache, root);
         }
     })
     .createTech();

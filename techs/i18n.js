@@ -1,7 +1,4 @@
 var EOL = require('os').EOL,
-    path = require('path'),
-    asyncRequire = require('enb/lib/fs/async-require'),
-    dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     keysets = require('../lib/keysets'),
     compile = require('../lib/compile');
 
@@ -57,28 +54,17 @@ module.exports = require('enb/lib/build-flow').create()
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsFile', '?.keysets.{lang}.js')
     .builder(function (keysetsFilename) {
-        var cache = this.node.getNodeCache(this._target),
-            cacheKey = 'keysets-file-' + path.basename(keysetsFilename),
-            promise;
-
-        if (cache.needRebuildFile(cacheKey, keysetsFilename)) {
-            dropRequireCache(require, keysetsFilename);
-            promise = asyncRequire(keysetsFilename)
-                .then(function (keysets) {
-                    cache.cacheFileInfo(cacheKey, keysetsFilename);
-
-                    return keysets;
-                });
-        } else {
-            promise = asyncRequire(keysetsFilename);
-        }
-
-        return promise
+        return this._readKeysetsFile(keysetsFilename)
             .then(function (sources) {
-                var parsed = keysets.parse(sources);
+                var parsed = keysets.parse(sources),
+                    opts = {
+                        version: parsed.version,
+                        language: this._lang
+                    };
+
                 return [
                     '(function (global) {',
-                    '    var __i18n__ = ' + compile(parsed, this._lang) + ',',
+                    '    var __i18n__ = ' + compile(parsed.core, parsed.keysets, opts) + ',',
                     '        defineAsGlobal = true;',
                     '',
                     '    // CommonJS',
@@ -102,5 +88,21 @@ module.exports = require('enb/lib/build-flow').create()
                     '})(this);'
                 ].join(EOL);
             }, this);
+    })
+    .methods({
+        /**
+         * Reads file with keysets.
+         *
+         * @param {String} filename — path to file with keysets.
+         * @returns {Promise}
+         * @private
+         */
+        _readKeysetsFile: function (filename) {
+            var node = this.node,
+                root = node.getRootDir(),
+                cache = node.getNodeCache(this._target);
+
+            return keysets.read(filename, cache, root);
+        }
     })
     .createTech();

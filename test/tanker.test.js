@@ -1,7 +1,7 @@
 // jscs:disable maximumLineLength
 var chai = require('chai'),
     assert = chai.assert,
-    xmlToJs = require('../../exlib/tanker.js').xmlToJs;
+    xmlToJs = require('../lib/tanker.js').xmlToJs;
 
 // assert.xmlToJs(a, b) ≡ assert.strictEqual(xmlToJs(a), b)
 chai.use(function (chai) {
@@ -11,6 +11,16 @@ chai.use(function (chai) {
 });
 
 describe('tanker', function () {
+    it('callback', function (done) {
+        var raw = 'str',
+            expected = JSON.stringify(raw);
+
+        xmlToJs(raw, function (res) {
+            assert.strictEqual(res, expected);
+            done();
+        });
+    });
+
     // Строки без танкерного XML и мнемоник, а также некорректные типы данных.
     describe('простые формы ключей', function () {
         ([

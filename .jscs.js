@@ -2,7 +2,7 @@ module.exports = {
     excludeFiles: [
         'node_modules',
         'coverage',
-        'exlib/sax.js',
+        'exlib',
         'test/fixtures/*'
     ],
     requireSpaceAfterKeywords: ['if', 'else', 'for', 'while', 'do', 'switch', 'return', 'try', 'catch'],

@@ -1,8 +1,6 @@
-var path = require('path'),
-    vow = require('vow'),
+var vow = require('vow'),
     serialize = require('serialize-javascript'),
-    asyncRequire = require('enb/lib/fs/async-require'),
-    dropRequireCache = require('enb/lib/fs/drop-require-cache');
+    keysets = require('../lib/keysets');
 
 /**
  * @class KeysetsTech
@@ -49,9 +47,7 @@ module.exports = require('enb/lib/build-flow.js').create()
     .useFileList(['i18n.js'])
     .useDirList(['i18n'])
     .builder(function (i18nFiles, i18nDirs) {
-        var node = this.node,
-            cache = node.getNodeCache(this._target),
-            lang = this._lang,
+        var lang = this._lang,
             langname = lang + '.js',
             result = {},
             files = [].concat(i18nFiles).concat(i18nDirs
@@ -62,10 +58,10 @@ module.exports = require('enb/lib/build-flow.js').create()
                         return [langname, 'all.js'].indexOf(file.name) > -1;
                     })
                     .sort(function (file1, file2) {
-                        if (file1.suffix === 'all.js') {
+                        if (file1.name === 'all.js') {
                             return -1;
                         }
-                        if (file2.suffix === 'all.js') {
+                        if (file2.name === 'all.js') {
                             return 1;
                         }
                         return 0;
@@ -73,22 +69,7 @@ module.exports = require('enb/lib/build-flow.js').create()
             );
 
         return vow.all(files.map(function (file) {
-            var promise,
-                filename = file.fullname,
-                cacheKey = 'keyset-file-' + path.relative(node.getRootDir(), filename);
-
-            if (cache.needRebuildFile(cacheKey, filename)) {
-                dropRequireCache(require, filename);
-                promise = asyncRequire(filename)
-                    .then(function (keysets) {
-                        cache.cacheFileInfo(cacheKey, filename);
-                        return keysets;
-                    });
-            } else {
-                promise = asyncRequire(filename);
-            }
-
-            return promise
+            return this._readKeysetsFile(file.fullname)
                 .then(function (keysets) {
                         Object.keys(keysets).forEach(function (scope) {
                             var keyset = keysets[scope];
@@ -99,9 +80,25 @@ module.exports = require('enb/lib/build-flow.js').create()
                             });
                         });
                     });
-                }))
+                }, this))
                 .then(function () {
                     return 'module.exports = ' + serialize(result) + ';';
                 });
+    })
+    .methods({
+        /**
+         * Reads file with keysets.
+         *
+         * @param {String} filename — path to file with keysets.
+         * @returns {Promise}
+         * @private
+         */
+        _readKeysetsFile: function (filename) {
+            var node = this.node,
+                root = node.getRootDir(),
+                cache = node.getNodeCache(this._target);
+
+            return keysets.read(filename, cache, root);
+        }
     })
     .createTech();

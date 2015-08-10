@@ -3,10 +3,10 @@ var path = require('path'),
     serializeJS = require('serialize-javascript'),
     MockNode = require('mock-enb/lib/mock-node'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    Tech = require('../../../techs/i18n-js'),
+    Tech = require('../../../techs/i18n'),
     core = require('../../fixtures/bem-core-v3/common.blocks/i18n/i18n.i18n.js').i18n.i18n;
 
-describe('i18n-js v2', function () {
+describe('i18n v2 (bem-core)', function () {
     afterEach(function () {
         mock.restore();
     });
@@ -122,11 +122,13 @@ describe('i18n-js v2', function () {
             var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.lang.lang.js'),
                 basename = 'bundle.keysets.lang.js',
-                filename = path.resolve('bundle', basename);
+                relPath = path.join('bundle', basename),
+                cacheKey = 'keysets-file-' + relPath,
+                filename = path.resolve(relPath);
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keysets-file-' + basename, filename);
+            cache.cacheFileInfo(cacheKey, filename);
 
             mock({
                 bundle: {
@@ -162,11 +164,13 @@ describe('i18n-js v2', function () {
             var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.lang.lang.js'),
                 basename = 'bundle.keysets.lang.js',
-                filename = path.resolve('bundle', basename);
+                relPath = path.join('bundle', basename),
+                cacheKey = 'keysets-file-' + relPath,
+                filename = path.resolve(relPath);
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keysets-file-' + basename, filename);
+            cache.cacheFileInfo(cacheKey, filename);
 
             mock({
                 bundle: {
@@ -206,4 +210,3 @@ function build(keysets) {
 function serialize(js) {
     return 'module.exports = ' + serializeJS(js) + ';';
 }
-

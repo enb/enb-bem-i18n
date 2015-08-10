@@ -4,10 +4,10 @@ var fs = require('fs'),
     serializeJS = require('serialize-javascript'),
     MockNode = require('mock-enb/lib/mock-node'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
-    Tech = require('../../../techs/i18n-js'),
+    Tech = require('../../../techs/i18n'),
     core;
 
-describe('i18n-js v1', function () {
+describe('i18n v1 (bem-bl)', function () {
     before(function () {
         var p = './test/fixtures/bem-core/common.blocks/i-bem/__i18n/i-bem__i18n.i18n/core.js';
         core = fs.readFileSync(path.resolve(p), { encoding: 'utf-8' });
@@ -103,11 +103,13 @@ describe('i18n-js v1', function () {
             var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.lang.lang.js'),
                 basename = 'bundle.keysets.lang.js',
-                filename = path.resolve('bundle', basename);
+                relPath = path.join('bundle', basename),
+                cacheKey = 'keysets-file-' + relPath,
+                filename = path.resolve(relPath);
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keysets-file-' + basename, filename);
+            cache.cacheFileInfo(cacheKey, filename);
 
             mock({
                 bundle: {
@@ -143,11 +145,13 @@ describe('i18n-js v1', function () {
             var bundle = new MockNode('bundle'),
                 cache = bundle.getNodeCache('bundle.lang.lang.js'),
                 basename = 'bundle.keysets.lang.js',
-                filename = path.resolve('bundle', basename);
+                relPath = path.join('bundle', basename),
+                cacheKey = 'keysets-file-' + relPath,
+                filename = path.resolve(relPath);
 
             dropRequireCache(require, filename);
             require(filename);
-            cache.cacheFileInfo('keysets-file-' + basename, filename);
+            cache.cacheFileInfo(cacheKey, filename);
 
             mock({
                 bundle: {
@@ -187,4 +191,3 @@ function build(keysets) {
 function serialize(js) {
     return 'module.exports = ' + serializeJS(js) + ';';
 }
-
