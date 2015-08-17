@@ -12,6 +12,8 @@ var EOL = require('os').EOL,
  * @param {Object}   options                                        Options.
  * @param {String}   [options.target='?.lang.{lang}.js']            Path to a target with compiled file.
  * @param {String}   options.lang                                   Language identifier.
+ * @param {String}   [options.exports={
+ *      globals: true, commonJS: true, ym: true}]                   Export settings.
  * @param {String}   [options.keysetsFile='?.keysets.{lang}.js']    Path to a source keysets file.
  *
  * @example
@@ -52,6 +54,11 @@ module.exports = require('enb/lib/build-flow').create()
     .name('i18n')
     .target('target', '?.lang.{lang}.js')
     .defineRequiredOption('lang')
+    .defineOption('exports', {
+        globals: true,
+        commonJS: true,
+        ym: true
+    })
     .useSourceFilename('keysetsFile', '?.keysets.{lang}.js')
     .builder(function (keysetsFilename) {
         return this._readKeysetsFile(keysetsFilename)
@@ -59,32 +66,44 @@ module.exports = require('enb/lib/build-flow').create()
                 var parsed = keysets.parse(sources),
                     opts = {
                         version: parsed.version,
-                        language: this._lang
-                    };
+                        language: this._lang,
+                        exports: this._exports
+                    },
+                    commonJS = opts.exports.commonJS || '',
+                    ym = opts.exports.ym || '',
+                    globals = opts.exports.globals || '',
+                    defineAsGlobal = opts.exports.globals === 'force' ?
+                        '' : '        defineAsGlobal = false;';
 
                 return [
                     '(function (global) {',
                     '    var __i18n__ = ' + compile(parsed.core, parsed.keysets, opts) + ',',
                     '        defineAsGlobal = true;',
                     '',
-                    '    // CommonJS',
-                    '    if (typeof exports === "object") {',
-                    '        module.exports = __i18n__;',
-                    '        defineAsGlobal = false;',
-                    '    }',
+                    commonJS && [
+                        '    // CommonJS',
+                        '    if (typeof exports === "object") {',
+                        '        module.exports = __i18n__;',
+                        defineAsGlobal,
+                        '    }'
+                    ].join(EOL),
                     '',
-                    '    // YModules',
-                    '    if (typeof modules === "object") {',
-                    '        modules.define("i18n", function (provide) {',
-                    '            provide(__i18n__);',
-                    '        });',
-                    '        defineAsGlobal = false;',
-                    '    }',
+                    ym && [
+                        '    // YModules',
+                        '    if (typeof modules === "object") {',
+                        '        modules.define("i18n", function (provide) {',
+                        '            provide(__i18n__);',
+                        '        });',
+                        defineAsGlobal,
+                        '    }'
+                    ].join(EOL),
                     '',
-                    '    if (defineAsGlobal) {',
-                    '        global.BEM || (global.BEM = {});',
-                    '        global.BEM.I18N = __i18n__;',
-                    '    }',
+                    globals && [
+                        '    if (defineAsGlobal) {',
+                        '        global.BEM || (global.BEM = {});',
+                        '        global.BEM.I18N = __i18n__;',
+                        '    }'
+                    ].join(EOL),
                     '})(this);'
                 ].join(EOL);
             }, this);
