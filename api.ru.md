@@ -53,10 +53,28 @@
 -------------------------------------
 **Пример**
 
-```javascript
-nodeConfig.addTechs([
-  [ require('enb-bem-i18n/techs/keysets'), { lang: '{lang}' } ]
-]);
+```js
+var KeysetsTech = require('enb-bem-i18n/techs/keysets'),
+    FileProvideTech = require('enb/techs/file-provider'),
+    bemTechs = require('enb-bem-techs');
+
+module.exports = function(config) {
+    config.setLanguages(['en', 'ru']);
+
+    config.node('bundle', function(node) {
+        // Получаем FileList
+        node.addTechs([
+            [FileProvideTech, { target: '?.bemdecl.js' }],
+            [bemTechs.levels, levels: ['blocks']],
+            bemTechs.deps,
+            bemTechs.files
+        ]);
+
+        // Собираем keyset-файлы для каждого языка
+        node.addTech([KeysetsTech, { lang: '{lang}' }]);
+        node.addTarget('?.keysets.{lang}.js');
+    });
+};
 ```
 
 ## i18n
@@ -79,7 +97,7 @@ nodeConfig.addTechs([
 
 Тип: `String`. По умолчанию: `?.lang.<lang>.js`.
 
-Имя таргета, куда будет записан результат сборки необходимых данных из `?.keysets.<lang>.js`-файла — скомпилированный файл `?.lang.<lang>.js`.
+Имя файла, куда будет записан результат сборки необходимых данных из `?.keysets.<lang>.js`-файла — скомпилированный файл `?.lang.<lang>.js`.
 
 
 #### lang
@@ -87,6 +105,12 @@ nodeConfig.addTechs([
 Тип: `String`. Обязательная опция.
 
 Язык, для которого необходимо собрать финальный файл, содержащий строки переводов.
+
+Допустимые значения:
+
+* **'lang'** — значение языка (например, `'en'`, `'ru'`), для которого будут собраны данные (`keysets`) из файлов `<lang>.js`.
+
+* **'{lang}'** — специальная директива, которая вызывает технологию необходимое количество раз с поочередной подстановкой в `'lang'` всех языков, указанных в параметрах функции `config.setLanguages()`.
 
 #### keysetsFile
 
@@ -97,11 +121,32 @@ nodeConfig.addTechs([
 -------------------------------------
 **Пример**
 
-```javascript
-nodeConfig.addTechs([
-  [ require('enb-bem-i18n/techs/i18n'), { lang: 'all'} ],
-  [ require('enb-bem-i18n/techs/i18n'), { lang: '{lang}'} ]
-]);
+```js
+var I18NTech  = require('enb-bem-i18n/techs/i18n'),
+    KeysetsTech = require('enb-bem-i18n/techs/keysets'),
+    FileProvideTech = require('enb/techs/file-provider'),
+    bemTechs = require('enb-bem-techs');
+
+module.exports = function(config) {
+    config.setLanguages(['en', 'ru']);
+
+    config.node('bundle', function(node) {
+        // Получаем FileList
+        node.addTechs([
+            [FileProvideTech, { target: '?.bemdecl.js' }],
+            [bemTechs.levels, levels: ['blocks']],
+            bemTechs.deps,
+            bemTechs.files
+        ]);
+
+        // Собираем keyset-файлы для каждого языка
+        node.addTech([KeysetsTech, { lang: '{lang}' }]);
+
+        // Собираем i18n-файлы для каждого языка
+        node.addTech([I18NTech, { lang: '{lang}' }]);
+        node.addTarget('?.lang.{lang}.js');
+    });
+};
 ```
 
 ## i18n-keysets-xml
