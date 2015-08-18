@@ -38,6 +38,7 @@ npm install --save-dev enb-bem-i18n
 ## Обзор документа
 
 <!-- TOC -->
+- [Быстрый старт](#Быстрый-старт)
 - [Основные понятия](#Основные-понятия)
   - [Исходные данные — keysets](#Исходные-данные--keysets)
     - [Расположение в файловой системе](#Расположение-в-файловой-системе)
@@ -60,7 +61,37 @@ npm install --save-dev enb-bem-i18n
 
 <!-- TOC END -->
 
+## Быстрый старт
 
+Чтобы собрать файлы интернализации для каждого языка, подключите необходимые технологии:
+
+```js
+var I18NTech  = require('enb-bem-i18n/techs/i18n'),
+    KeysetsTech = require('enb-bem-i18n/techs/keysets'),
+    FileProvideTech = require('enb/techs/file-provider'),
+    bemTechs = require('enb-bem-techs');
+
+module.exports = function(config) {
+    config.setLanguages(['en', 'ru']);
+
+    config.node('bundle', function(node) {
+        // Получаем FileList
+        node.addTechs([
+            [FileProvideTech, { target: '?.bemdecl.js' }],
+            [bemTechs.levels, levels: ['blocks']],
+            bemTechs.deps,
+            bemTechs.files
+        ]);
+
+        // Собираем keyset-файлы для каждого языка
+        node.addTech([KeysetsTech, { lang: '{lang}' }]);
+
+        // Собираем i18n-файлы для каждого языка
+        node.addTech([I18NTech, { lang: '{lang}' }]);
+        node.addTarget('?.lang.{lang}.js');
+    });
+};
+```
 ## Основные понятия
 
 ### Исходные данные — keysets
