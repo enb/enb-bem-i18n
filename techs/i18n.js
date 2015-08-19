@@ -100,6 +100,12 @@ module.exports = require('enb/lib/build-flow').create()
                     '',
                     globals && [
                         '    if (defineAsGlobal) {',
+                        '        if (typeof BEM === \'undefined\' || BEM === null) {',
+                        '            BEM = { I18N: __i18n__ };',
+                        '        } else {',
+                        '            BEM.I18N = __i18n__;',
+                        '        }',
+                        '',
                         '        global.BEM || (global.BEM = {});',
                         '        global.BEM.I18N = __i18n__;',
                         '    }'
