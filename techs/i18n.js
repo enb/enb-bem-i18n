@@ -69,49 +69,46 @@ module.exports = require('enb/lib/build-flow').create()
                         language: this._lang,
                         exports: this._exports
                     },
-                    commonJS = opts.exports.commonJS || '',
-                    ym = opts.exports.ym || '',
-                    globals = opts.exports.globals || '',
-                    defineAsGlobal = opts.exports.globals === 'force' ?
-                        '' : '        defineAsGlobal = false;';
+                    globals = opts.exports.globals,
+                    forceGlobals = globals === 'force';
 
-                return [
-                    '(function (global) {',
-                    '    var __i18n__ = ' + compile(parsed.core, parsed.keysets, opts) + ',',
-                    '        defineAsGlobal = true;',
-                    '',
-                    commonJS && [
+                return [].concat(
+                    [
+                        forceGlobals ? 'var BEM;' : '',
+                        '(function (global) {',
+                        '    var __i18n__ = ' + compile(parsed.core, parsed.keysets, opts) + ',',
+                        '        defineAsGlobal = true;',
+                        ''
+                    ],
+                    opts.exports.commonJS ? [
                         '    // CommonJS',
                         '    if (typeof exports === "object") {',
                         '        module.exports = __i18n__;',
-                        defineAsGlobal,
-                        '    }'
-                    ].join(EOL),
-                    '',
-                    ym && [
+                        forceGlobals ?
+                        '        defineAsGlobal = false;' : '',
+                        '    }',
+                        ''
+                    ] : '',
+                    opts.exports.ym ? [
                         '    // YModules',
                         '    if (typeof modules === "object") {',
                         '        modules.define("i18n", function (provide) {',
                         '            provide(__i18n__);',
                         '        });',
-                        defineAsGlobal,
-                        '    }'
-                    ].join(EOL),
-                    '',
-                    globals && [
-                        '    if (defineAsGlobal) {',
-                        '        if (typeof BEM === \'undefined\' || BEM === null) {',
-                        '            BEM = { I18N: __i18n__ };',
-                        '        } else {',
-                        '            BEM.I18N = __i18n__;',
-                        '        }',
+                        forceGlobals ?
+                        '        defineAsGlobal = false;' : '',
+                        '    }',
                         '',
-                        '        global.BEM || (global.BEM = {});',
-                        '        global.BEM.I18N = __i18n__;',
+                    ] : '',
+                    globals ? [
+                        '    if (defineAsGlobal) {',
+                        forceGlobals ?
+                        '        (BEM || (BEM = {})).I18N = __i18n__;' : '',
+                        '        (global.BEM || (global.BEM = {})).I18N = __i18n__;',
                         '    }'
-                    ].join(EOL),
+                    ] : '',
                     '})(this);'
-                ].join(EOL);
+                ).join(EOL);
             }, this);
     })
     .methods({
