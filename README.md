@@ -129,7 +129,7 @@ module.exports = {
 ```js
 module.exports = {
     greeting: {
-        hello: 'Привет!''
+        hello: 'Привет!'
     }
 };
 ```
