@@ -35,7 +35,7 @@
   "dependencies": {
     "dom-js": "0.0.9",
     "vow": "0.4.10",
-    "serialize-javascript": "1.1.1"
+    "serialize-javascript": "1.1.2"
   },
   "devDependencies": {
     "bower": "1.5.2",
