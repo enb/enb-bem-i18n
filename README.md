@@ -46,11 +46,16 @@ npm install --save-dev enb-bem-i18n
 - [Работа с технологиями](#Работа-с-технологиями)
   - [Объединение данных](#Объединение-данных)
   - [Обработка данных](#Обработка-данных)
+  - [Сборка шаблонов](#Сборка-шаблонов)
+    - [BEMHTML](#bemhtml)
+    - [BH](#bh)
 - [Использование](#Использование)
   - [В JavaScript](#В-javascript)
     - [Использование в Node.js](#Использование-в-nodejs)
     - [Использование в браузере](#Использование-в-браузере)
   - [В шаблонах](#В-шаблонах)
+    - [BEMHTML](#bemhtml-1)
+    - [BH](#bh-1)
 - [API `i18n`](#api-i18n)
   - [Инициализация](#Инициализация)
   - [Параметризация значений](#Параметризация-значений)
@@ -294,6 +299,94 @@ module.exports = {
 >API взаимодействия с ядром `i18n` описан в разделе [API `i18n`](#api-i18n).
 Результатом являются `lang.<lang>.js`-файлы, содержащие строки переводов, соответствующие запрошенным ключам.
 
+### Сборка шаблонов
+
+Для сборки интернационализированных шаблонов необходимо отдельно собрать шаблоны, отдельно `i18n`-файлы, а потом склеить их попарно для каждого языка.
+
+```
+index.bemhtml.js
+index.lang.en.js
+index.lang.ru.js
+
+index.en.bemhtml.js  # index.lang.en.js + index.bemhtml.js
+index.ru.bemhtml.js  # index.lang.ru.js + index.bemhtml.js
+```
+
+После подключения `BEM.I18N` как сторонней библиотеки ее можно использовать в BEMHTML-шаблонах с помощью метода `this.require()`, а в BH из пространства имён `bh.lib`.
+
+> Подробнее о том, как подключаются сторонние библиотеки смотрите в документации к пакетам [enb-bemxjst](https://github.com/enb-bem/enb-bemxjst/blob/master/README.md#Подключение-сторонних-библиотек) и [enb-bh](https://github.com/enb-bem/enb-bh/blob/master/README.md#Подключение-сторонних-библиотек).
+
+`i18n`-файлы нужно собирать так, чтобы `i18n`-функция была доступна из переменной `BEM.I18N` в любой среде исполнения. Для этого следует использовать опцию [exports](api.ru.md) со значением `{ globals: 'force' }`.
+
+**Пример сборки BEMHTML и BH шаблонов**
+
+```js
+var I18NTech  = require('enb-bem-i18n/techs/i18n'),
+    KeysetsTech = require('enb-bem-i18n/techs/keysets'),
+    BEMHTMLTech = require('enb-bemxjst/techs/bemhtml'),
+    BHTech = require('enb-bh/techs/bh-bundle'),
+    FileProvideTech = require('enb/techs/file-provider'),
+    FileMergeTech = require('enb/techs/file-merge'),
+    bemTechs = require('enb-bem-techs');
+
+module.exports = function(config) {
+    config.setLanguages(['en', 'ru']);
+
+    config.node('bundle', function(node) {
+        // Получаем FileList
+        node.addTechs([
+            [FileProvideTech, { target: '?.bemdecl.js' }],
+            [bemTechs.levels, levels: ['blocks']],
+            bemTechs.deps,
+            bemTechs.files
+        ]);
+
+        // Собираем keyset-файлы для каждого языка
+        node.addTech([KeysetsTech, { lang: '{lang}' }]);
+        // Собираем i18n-файлы для каждого языка
+        node.addTech([I18NTech, {
+            lang: '{lang}',
+            exports: { globals: 'force' }
+        }]);
+
+        // Собираем BEMHTML-шаблоны.
+        // Подключаем `BEM.I18N` как стороннюю библиотеку.
+        // В шаблонах `i18n`-функция будет доступна c помощью метода `this.require('i18n')`.
+        node.addTech([BEMHTMLTech, {
+            requires: {
+                i18n: { globals: 'BEM.I18N' }
+            }
+        }]);
+
+        // Объединяем скомпилированный BEMHTML-файл с i18n-файлами для каждого языка
+        node.addTech([FileMergeTech, {
+            target: '?.{lang}.bemhtml.js',
+            lang: '{lang}',
+            sources: ['?.bemhtml.js', '?.lang.{lang}.js']
+        }]);
+        node.addTarget('?.{lang}.bemhtml.js');
+
+
+        // Собираем BH-шаблоны.
+        // Подключаем `BEM.I18N` как стороннюю библиотеку.
+        // В шаблонах `i18n`-функция будет доступна из `bh.lib.i18n`.
+        node.addTech([BHTech, {
+            requires: {
+                i18n: { globals: 'BEM.I18N' }
+            }
+        }]);
+
+        // Объединяем скомпилированный BH-файл с i18n-файлами для каждого языка
+        node.addTech([FileMergeTech, {
+            target: '?.{lang}.bh.js',
+            lang: '{lang}',
+            sources: ['?.bh.js', '?.lang.{lang}.js']
+        }]);
+        node.addTarget('?.{lang}.bh.js');
+    });
+};
+```
+
 ## Использование
 
 Функция `i18n` может использоваться:
@@ -337,11 +430,33 @@ i18n('scope', 'key'); // 'val'
 
 ### В шаблонах
 
-Использование функции `i18n` в шаблонах обеспечивают следующие пакеты, которые осуществляют поддержку `i18n` для ENB:
+Способы использования `i18n`-функции зависят от [сборки шаблонов](README.md#Сборка-шаблонов).
 
-* [enb-bemxjst-i18n](https://github.com/enb-bem/enb-bemxjst-i18n)
-* [enb-xjst-i18n](https://github.com/enb-bem/enb-xjst-i18n)
-* [enb-bh-i18n](https://github.com/enb-bem/enb-bh-i18n)
+#### BEMHTML
+
+После подключения `BEM.I18N` как [сторонней библиотеки](https://github.com/enb-bem/enb-bemxjst/blob/master/README.md#Подключение-сторонних-библиотек) ее можно использовать в шаблонах с помощью метода `this.require`.
+
+```js
+block('button').elem('tooltip').content()(function () {
+    var i18n = this.require('i18n'),  // Библиотека `BEM.I18N`
+
+    // Локализованное значение для ключа `tooltip`
+    return i18n('button', 'tooltip');
+});
+```
+
+#### BH
+
+После подключения `BEM.I18N` как [сторонней библиотеки](https://github.com/enb-bem/enb-bh/blob/master/README.md#Подключение-сторонних-библиотек) ее можно использовать в шаблонах из пространства имен `bh.lib`.
+
+```js
+bh.match('block', function (ctx) {
+    ctx.content({
+        elem: 'tooltip',
+        content: bh.lib.i18n('block', 'tooltip');
+    });
+});
+```
 
 ## API `i18n`
 
