@@ -83,7 +83,7 @@ module.exports = function(config) {
 
 `i18n` — технология сборки, которая транслирует данные из `?.keysets.<lang>.js`-файлов в JavaScript.
 
-Технология `i18n` инициализирует ядро `i18n` данными из объединенных keyset-файлов и возвращает функцию `BEM.i18n`, которую можно использовать из [шаблонов](/README.md#в-шаблонах) или [клиентского JavaScript](README.md#В-javascript).
+Технология `i18n` инициализирует ядро `i18n` данными из объединенных keyset-файлов и возвращает функцию `i18n`, которую можно использовать из [шаблонов](/README.md#в-шаблонах) или [клиентского JavaScript](README.md#В-javascript).
 
 >API функции `i18n` описан в разделе [API `i18n`](README.md#api-i18n).
 
@@ -91,14 +91,14 @@ module.exports = function(config) {
 
 * [target](#target-1)
 * [lang](#lang-1)
-* [keysetsFile](#keysetsаile)
+* [keysetsFile](#keysetsfile)
+* [exports](#exports)
 
 #### target
 
 Тип: `String`. По умолчанию: `?.lang.<lang>.js`.
 
 Имя файла, куда будет записан результат сборки необходимых данных из `?.keysets.<lang>.js`-файла — скомпилированный файл `?.lang.<lang>.js`.
-
 
 #### lang
 
@@ -117,6 +117,16 @@ module.exports = function(config) {
 Тип: `String`. По умолчанию — `?.keysets.<lang>.js`.
 
 `?.keysets.<lang>.js`-файл — это результат выполнения [keysets](#keysets) — набор данных (`keysets`) для указанного языка, который используется технологией [i18n](#i18n) для формирования `?.lang.<lang>.js`-файлов.
+
+#### exports
+
+Тип: `Object`. По умолчанию — `{ globals: true, commonJS: true, ym: true }`.
+
+Настраивает способ получения функции `i18n`. Возможные опции:
+
+* `globals: true` — функция `i18n` будет доступна из глобальной переменной `BEM.I18N`, если в среде исполнения нет модульных систем. Чтобы глобальная переменная была доступна при наличии модульных систем, нужно указать специальное значение `globals: 'force'`.
+* `commonJS: true` — скомпилированный файл можно подключить как CommonJS модуль.
+* `ym: true` — функция `i18n` будет доступна из модульной системы [YModules](https://ru.bem.info/tools/bem/modules/).
 
 -------------------------------------
 **Пример**
