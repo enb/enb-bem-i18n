@@ -65,9 +65,9 @@ module.exports = function(config) {
         // Получаем FileList
         node.addTechs([
             [FileProvideTech, { target: '?.bemdecl.js' }],
-            [bemTechs.levels, levels: ['blocks']],
-            bemTechs.deps,
-            bemTechs.files
+            [bemTechs.levels, { levels: ['blocks'] }],
+            [bemTechs.deps],
+            [bemTechs.files]
         ]);
 
         // Собираем keyset-файлы для каждого языка
@@ -144,9 +144,9 @@ module.exports = function(config) {
         // Получаем FileList
         node.addTechs([
             [FileProvideTech, { target: '?.bemdecl.js' }],
-            [bemTechs.levels, levels: ['blocks']],
-            bemTechs.deps,
-            bemTechs.files
+            [bemTechs.levels, { levels: ['blocks'] }],
+            [bemTechs.deps],
+            [bemTechs.files]
         ]);
 
         // Собираем keyset-файлы для каждого языка
@@ -199,9 +199,9 @@ module.exports = function(config) {
         // Получаем FileList
         node.addTechs([
             [FileProvideTech, { target: '?.bemdecl.js' }],
-            [bemTechs.levels, levels: ['blocks']],
-            bemTechs.deps,
-            bemTechs.files
+            [bemTechs.levels, { levels: ['blocks'] }],
+            [bemTechs.deps],
+            [bemTechs.files]
         ]);
 
         // Собираем keyset-файлы для каждого языка

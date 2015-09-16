@@ -47,15 +47,14 @@ npm install --save-dev enb-bem-i18n
   - [Объединение данных](#Объединение-данных)
   - [Обработка данных](#Обработка-данных)
   - [Сборка шаблонов](#Сборка-шаблонов)
-    - [BEMHTML](#bemhtml)
-    - [BH](#bh)
+  - [Сборка только необходимых переводов](#Сборка-только-необходимых-переводов)
 - [Использование](#Использование)
   - [В JavaScript](#В-javascript)
     - [Использование в Node.js](#Использование-в-nodejs)
     - [Использование в браузере](#Использование-в-браузере)
   - [В шаблонах](#В-шаблонах)
-    - [BEMHTML](#bemhtml-1)
-    - [BH](#bh-1)
+    - [BEMHTML](#bemhtml)
+    - [BH](#bh)
 - [API `i18n`](#api-i18n)
   - [Инициализация](#Инициализация)
   - [Параметризация значений](#Параметризация-значений)
@@ -83,9 +82,9 @@ module.exports = function(config) {
         // Получаем FileList
         node.addTechs([
             [FileProvideTech, { target: '?.bemdecl.js' }],
-            [bemTechs.levels, levels: ['blocks']],
-            bemTechs.deps,
-            bemTechs.files
+            [bemTechs.levels, { levels: ['blocks'] }],
+            [bemTechs.deps],
+            [bemTechs.files]
         ]);
 
         // Собираем keyset-файлы для каждого языка
@@ -336,9 +335,9 @@ module.exports = function(config) {
         // Получаем FileList
         node.addTechs([
             [FileProvideTech, { target: '?.bemdecl.js' }],
-            [bemTechs.levels, levels: ['blocks']],
-            bemTechs.deps,
-            bemTechs.files
+            [bemTechs.levels, { levels: ['blocks'] }],
+            [bemTechs.deps],
+            [bemTechs.files]
         ]);
 
         // Собираем keyset-файлы для каждого языка
@@ -383,6 +382,178 @@ module.exports = function(config) {
             sources: ['?.bh.js', '?.lang.{lang}.js']
         }]);
         node.addTarget('?.{lang}.bh.js');
+    });
+};
+```
+
+### Сборка только необходимых переводов
+
+Если в браузере используется лишь часть переводов (например, когда остальные переводы применяются при шаблонизации в `Node.js`), то для экономии можно собрать только их.
+
+Для этого в [файлах зависимостей](https://ru.bem.info/technology/deps/about/) потребуется указать дополнительную информацию о том, какие технологии используют переводы.
+
+* При использовании в JavaScript-коде блоков в `deps.js`-файл необходимо добавить зависимость для `js`-технологии.
+
+  ```js
+  {
+      tech: 'js'
+      shouldDeps: {
+          tech: 'i18n'
+      }
+  }
+  ```
+
+  Такая запись означает, что `js` технология блока зависит от технологии `i18n` этого же блока. Иначе говоря, в JavaScript-коде, предназначенном для работы в браузере, используются переводы.
+
+  **Важно:** если в браузер должны попасть все переводы без исключения, то такая запись не обязательна.
+
+* При использовании в коде шаблонов в `deps.js`-файл необходимо добавить зависимость для `bemhtml`- или `bh`-технологии.
+
+  ```js
+  {
+      tech: 'bemhtml'
+      shouldDeps: {
+          tech: 'i18n'
+      }
+  }
+  ```
+
+  **Важно:** если в собранные шаблоны должны попасть все переводы без исключения, то такая запись не обязательна.
+
+На основе этой информации в процессе сборки можно составить список БЭМ-сущностей, переводы которых необходимы для работы в браузере.
+
+> Для сборки на основе зависимостей по технологиям понадобится [depsByTechToBemdecl](https://github.com/enb-bem/enb-bem-techs/blob/master/docs/api.ru.md#depsbytechtobemdecl) из пакета [enb-bem-techs](https://github.com/enb-bem/enb-bem-techs/blob/master/README.md).
+
+**Пример сборки i18n для работы в браузере**
+
+```js
+var I18NTech  = require('enb-bem-i18n/techs/i18n'),
+    KeysetsTech = require('enb-bem-i18n/techs/keysets'),
+    FileProvideTech = require('enb/techs/file-provider'),
+    bemTechs = require('enb-bem-techs');
+
+module.exports = function (config) {
+    config.setLanguages(['en', 'ru']);
+
+    config.node('bundle', function () {
+        // Получаем FileList
+        node.addTechs([
+            [bemTechs.levels, { levels: ['blocks'] }],
+            [FileProviderTech, { target: '?.bemdecl.js' }],
+            [bemTechs.deps],
+            [bemTechs.files]
+        ]);
+
+        // Получаем декларацию `?.i18n.bemdecl.js`, содержащую список только необходимых БЭМ-сущностей
+        // для работы i18n в браузере
+        node.addTech([bemTechs.depsByTechToBemdecl, {
+            target: '?.browser-i18n.bemdecl.js',
+            sourceTech: 'js',
+            destTech: 'i18n'
+        }]);
+        node.addTarget('?.browser-i18n.bemdecl.js');
+
+        // Получаем список необходимых файлов с переводами
+        node.addTechs([
+            [bemTechs.deps, {
+                target: '?.browser-i18n.deps.js',
+                bemdeclFile: '?.browser-i18n.bemdecl.js'
+            }],
+            [bemTechs.files, {
+                filesTarget: '?.browser-i18n.files',
+                dirsTarget: '?.browser-i18n.dirs',
+                depsFile: '?.browser-i18n.deps.js'
+            }]
+        ]);
+
+        // Собираем keyset-файлы для каждого языка
+        node.addTech([KeysetsTech, {
+            filesTarget: '?.browser-i18n.files',
+            lang: '{lang}'
+        }]);
+
+        // Собираем i18n-файлы для каждого языка
+        node.addTech([I18NTech, { lang: '{lang}' }]);
+        node.addTarget('?.lang.{lang}.js');
+    });
+};
+```
+
+Для сборки клиенских шаблонов, которые используют `i18n` можно воспользоваться информацией о JavaScript-зависимостях от технологии шаблонов.
+
+```js
+{
+    tech: 'js'
+    shouldDeps: {
+        tech: 'bemhtml' // или `bh`
+    }
+}
+```
+
+**Пример сборки i18n для работы в браузере JavaScript-кода и шаблонов**
+
+```js
+var I18NTech  = require('enb-bem-i18n/techs/i18n'),
+    KeysetsTech = require('enb-bem-i18n/techs/keysets'),
+    FileProvideTech = require('enb/techs/file-provider'),
+    bemTechs = require('enb-bem-techs');
+
+module.exports = function (config) {
+    config.setLanguages(['en', 'ru']);
+
+    config.node('bundle', function () {
+        // Получаем FileList
+        node.addTechs([
+            [bemTechs.levels, { levels: ['blocks'] }],
+            [FileProviderTech, { target: '?.bemdecl.js' }],
+            [bemTechs.deps],
+            [bemTechs.files]
+        ]);
+
+        // Получаем декларацию, содержащую список только необходимых БЭМ-сущностей
+        // для работы в браузере BEMHTML, который использует i18n.
+        node.addTechs([
+            // декларация для работы i18n в браузере
+            [bemTechs.depsByTechToBemdecl, {
+                target: '?.browser-i18n.bemdecl.js',
+                sourceTech: 'js',
+                destTech: 'i18n'
+            }],
+            // декларация для работы BEMHTML в браузере
+            [bemTechs.depsByTechToBemdecl, {
+                target: '?.browser-bemhtml.bemdecl.js',
+                sourceTech: 'js',
+                destTech: 'bemhtml'
+            }],
+            // объединяем декларации
+            [bemTechs.mergeBemdecl, {
+                sources: ['?.browser-bemhtml.bemdecl.js', '?.browser-i18n.bemdecl.js'],
+                target: '?.browser-bemhtml+i18n.bemdecl.js'
+            }]
+        ]);
+
+        // Получаем список необходимых файлов с переводами
+        node.addTechs([
+            [bemTechs.deps, {
+                target: '?.browser-bemhtml+i18n.deps.js',
+                bemdeclFile: '?.browser-bemhtml+i18n.bemdecl.js'
+            }],
+            [bemTechs.files, {
+                filesTarget: '?.browser-bemhtml+i18n.files',
+                dirsTarget: '?.browser-bemhtml+i18n.dirs',
+                depsFile: '?.browser-bemhtml+i18n.deps.js'
+            }]
+        ]);
+
+        // Собираем keyset-файлы для каждого языка
+        node.addTech([KeysetsTech, {
+            filesTarget: '?.browser-bemhtml+i18n.files',
+            lang: '{lang}'
+        }]);
+
+        // Собираем i18n-файлы для каждого языка
+        node.addTech([I18NTech, { lang: '{lang}' }]);
+        node.addTarget('?.lang.{lang}.js');
     });
 };
 ```
