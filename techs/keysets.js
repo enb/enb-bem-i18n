@@ -41,7 +41,7 @@ var vow = require('vow'),
  * };
  */
 module.exports = require('enb/lib/build-flow.js').create()
-    .name('i18n-merge-keysets')
+    .name('keysets')
     .target('target', '?.keysets.{lang}.js')
     .defineRequiredOption('lang')
     .useFileList(['i18n.js'])

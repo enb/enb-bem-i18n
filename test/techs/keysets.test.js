@@ -8,7 +8,7 @@ var fs = require('fs'),
     dropRequireCache = require('enb/lib/fs/drop-require-cache'),
     Tech = require('../../techs/keysets');
 
-describe('i18n-merge-keysets', function () {
+describe('keysets', function () {
     afterEach(function () {
         mock.restore();
     });
