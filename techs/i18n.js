@@ -21,19 +21,16 @@ var EOL = require('os').EOL,
  *     FileProvideTech = require('enb/techs/file-provider'),
  *     Keysets = require('enb-bem-i18n/techs/keysets'),
  *     I18n = require('enb-bem-i18n/techs/i18n-js'),
- *     bem = require('enb-bem-techs');
+ *     bemTechs = require('enb-bem-techs');
  *
  * module.exports = function(config) {
  *    config.node('bundle', function(node) {
- *        // get BEMJSON file
- *        node.addTech([FileProvideTech, { target: '?.bemjson.js' }]);
- *
  *        // get FileList
  *        node.addTechs([
- *            [bem.levels, levels: ['blocks']],
- *            bem.bemjsonToBemdecl,
- *            bem.deps,
- *            bem.files
+ *            [FileProvideTech, { target: '?.bemdecl.js' }],
+ *            [bemTechs.levels, { levels: ['blocks'] }],
+ *            [bemTechs.deps],
+ *            [bemTechs.files]
  *        ]);
  *
  *        // collect and merge keysets files into bundle
