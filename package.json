@@ -33,9 +33,10 @@
     "enb": ">= 0.11.0 < 1.0.0"
   },
   "dependencies": {
+    "clear-require": "1.0.1",
     "dom-js": "0.0.9",
-    "vow": "0.4.10",
-    "serialize-javascript": "1.1.2"
+    "serialize-javascript": "1.1.2",
+    "vow": "0.4.10"
   },
   "devDependencies": {
     "bower": "1.5.2",

@@ -5,7 +5,7 @@ var fs = require('fs'),
     serializeJS = require('serialize-javascript'),
     MockNode = require('mock-enb/lib/mock-node'),
     FileList = require('enb/lib/file-list'),
-    dropRequireCache = require('enb/lib/fs/drop-require-cache'),
+    clearRequire = require('clear-require'),
     Tech = require('../../techs/keysets');
 
 describe('keysets', function () {
@@ -629,7 +629,7 @@ describe('keysets', function () {
             bundle.provideTechData('?.files', fileList);
             bundle.provideTechData('?.dirs', dirList);
 
-            dropRequireCache(require, filename);
+            clearRequire(filename);
             require(filename);
             cache.cacheFileInfo(cacheKey, filename);
 

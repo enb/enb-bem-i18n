@@ -3,7 +3,7 @@ var fs = require('fs'),
     mock = require('mock-fs'),
     serializeJS = require('serialize-javascript'),
     MockNode = require('mock-enb/lib/mock-node'),
-    dropRequireCache = require('enb/lib/fs/drop-require-cache'),
+    clearRequire = require('clear-require'),
     Tech = require('../../../techs/i18n'),
     core;
 
@@ -107,7 +107,7 @@ describe('i18n for bem-bl', function () {
                 cacheKey = 'keysets-file-' + relPath,
                 filename = path.resolve(relPath);
 
-            dropRequireCache(require, filename);
+            clearRequire(filename);
             require(filename);
             cache.cacheFileInfo(cacheKey, filename);
 
@@ -149,7 +149,7 @@ describe('i18n for bem-bl', function () {
                 cacheKey = 'keysets-file-' + relPath,
                 filename = path.resolve(relPath);
 
-            dropRequireCache(require, filename);
+            clearRequire(filename);
             require(filename);
             cache.cacheFileInfo(cacheKey, filename);
 
