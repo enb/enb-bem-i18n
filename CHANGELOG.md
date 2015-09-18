@@ -1,6 +1,18 @@
 История изменений
 =================
 
+1.0.1
+-----
+
+### Исправление ошибок
+
+* Теперь используется ядро из блока `i18n`, если в проекте есть ещё и `i-bem__i18n` ([#76]).
+* Исправлено имя технологии `keysets`.
+
+### Зависимости
+
+* Для очистки кэша вместо устаревшего `drop-require-cache` используется модуль `clear-require`.
+
 1.0.0
 -----
 
@@ -126,6 +138,7 @@ node.addTechs([
 * Добавлена `i18n-lang-js` технология.
 * Добавлена `i18n-merge-keysets` технология.
 
+[#76]: https://github.com/enb-bem/enb-bem-i18n/issues/76
 [#51]: https://github.com/enb-bem/enb-bem-i18n/issues/51
 [#29]: https://github.com/enb-bem/enb-bem-i18n/issues/29
 [#27]: https://github.com/enb-bem/enb-bem-i18n/issues/27
