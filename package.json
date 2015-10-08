@@ -37,19 +37,19 @@
     "dom-js": "0.0.9",
     "enb-async-require": "1.0.1",
     "serialize-javascript": "1.1.2",
-    "vow": "0.4.10"
+    "vow": "0.4.11"
   },
   "devDependencies": {
-    "bower": "1.5.2",
-    "chai": "3.2.0",
+    "bower": "1.5.3",
+    "chai": "3.3.0",
     "enb": ">= 0.15.0 < 2.0.0",
-    "istanbul": "0.3.20",
+    "istanbul": "0.3.22",
     "jscs": "1.13.1",
     "jshint": "2.8.0",
-    "mocha": "2.3.2",
+    "mocha": "2.3.3",
     "mock-enb": "0.3.0",
-    "mock-fs": "3.2.0",
-    "must": "0.12.0"
+    "mock-fs": "3.3.0",
+    "must": "0.13.1"
   },
   "scripts": {
     "deps": "bower i",
