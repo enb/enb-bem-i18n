@@ -5,6 +5,7 @@ var fs = require('fs'),
     serializeJS = require('serialize-javascript'),
     MockNode = require('mock-enb/lib/mock-node'),
     FileList = require('enb/lib/file-list'),
+    loadDirSync = require('mock-enb/utils/dir-utils').loadDirSync,
     clearRequire = require('clear-require'),
     Tech = require('../../techs/keysets');
 
@@ -578,7 +579,7 @@ describe('keysets', function () {
                 fileList = new FileList(),
                 dirList = new FileList();
 
-            fileList.loadFromDirSync(dirname);
+            fileList.addFiles(loadDirSync(dirname));
 
             bundle.provideTechData('?.files', fileList);
             bundle.provideTechData('?.dirs', dirList);
@@ -624,7 +625,7 @@ describe('keysets', function () {
                 fileList = new FileList(),
                 dirList = new FileList();
 
-            fileList.loadFromDirSync(dirname);
+            fileList.addFiles(loadDirSync(dirname));
 
             bundle.provideTechData('?.files', fileList);
             bundle.provideTechData('?.dirs', dirList);

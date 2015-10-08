@@ -1,4 +1,6 @@
 var EOL = require('os').EOL,
+    enb = require('enb'),
+    buildFlow = enb.buildFlow || require('enb/lib/build-flow'),
     keysets = require('../lib/keysets'),
     compile = require('../lib/compile');
 
@@ -47,7 +49,7 @@ var EOL = require('os').EOL,
  *    });
  * };
  */
-module.exports = require('enb/lib/build-flow').create()
+module.exports = buildFlow.create()
     .name('i18n')
     .target('target', '?.lang.{lang}.js')
     .defineRequiredOption('lang')
