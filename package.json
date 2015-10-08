@@ -2,7 +2,7 @@
   "author": "Andrew Abramov <andrewblond@yandex.com>",
   "description": "BEM.I18N support for ENB",
   "name": "enb-bem-i18n",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "repository": "git://github.com/enb-bem/enb-bem-i18n",
   "homepage": "https://github.com/enb-bem/enb-bem-i18n",
   "bugs": "https://github.com/enb-bem/enb-bem-i18n/issues",

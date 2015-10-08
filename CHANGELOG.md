@@ -1,6 +1,17 @@
 История изменений
 =================
 
+1.1.0
+-----
+
+### Крупные изменения
+
+* Добавлена поддержка `enb` версии `1.x` ([#80]).
+
+### Зависимости
+
+* Модуль `vow@0.4.10` обновлен до версии `0.4.11`.
+
 1.0.1
 -----
 
@@ -138,6 +149,7 @@ node.addTechs([
 * Добавлена `i18n-lang-js` технология.
 * Добавлена `i18n-merge-keysets` технология.
 
+[#80]: https://github.com/enb-bem/enb-bem-i18n/pull/80
 [#76]: https://github.com/enb-bem/enb-bem-i18n/issues/76
 [#51]: https://github.com/enb-bem/enb-bem-i18n/issues/51
 [#29]: https://github.com/enb-bem/enb-bem-i18n/issues/29
