@@ -1,4 +1,6 @@
 var vow = require('vow'),
+    enb = require('enb'),
+    buildFlow = enb.buildFlow || require('enb/lib/build-flow'),
     serialize = require('serialize-javascript'),
     keysets = require('../lib/keysets');
 
@@ -37,7 +39,7 @@ var vow = require('vow'),
  *    });
  * };
  */
-module.exports = require('enb/lib/build-flow.js').create()
+module.exports = buildFlow.create()
     .name('keysets')
     .target('target', '?.keysets.{lang}.js')
     .defineRequiredOption('lang')

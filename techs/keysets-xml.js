@@ -1,4 +1,6 @@
 var EOL = require('os').EOL,
+    enb = require('enb'),
+    buildFlow = enb.buildFlow || require('enb/lib/build-flow'),
     keysets = require('../lib/keysets'),
     domjs = require('dom-js');
 
@@ -45,7 +47,7 @@ var EOL = require('os').EOL,
  *    });
  * };
  */
-module.exports = require('enb/lib/build-flow').create()
+module.exports = buildFlow.create()
     .name('keysets-xml')
     .target('target', '?.keysets.{lang}.xml')
     .defineRequiredOption('lang')
