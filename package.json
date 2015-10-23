@@ -30,19 +30,22 @@
     "node": ">= 0.10.0"
   },
   "peerDependencies": {
-    "enb": ">= 0.11.0 < 1.0.0"
+    "enb": ">= 0.15.0 < 2.0.0"
   },
   "dependencies": {
+    "clear-require": "1.0.1",
     "dom-js": "0.0.9",
+    "enb-async-require": "1.0.1",
+    "enb-require-or-eval": "1.0.2",
     "vow": "0.4.10"
   },
   "devDependencies": {
-    "enb": ">= 0.11.0 < 1.0.0",
+    "enb": ">= 0.15.0 < 2.0.0",
     "istanbul": "0.3.17",
     "jscs": "1.13.1",
     "jshint": "2.8.0",
     "mocha": "2.2.5",
-    "mock-enb": "0.1.0",
+    "mock-enb": "0.3.0",
     "mock-fs": "3.0.0",
     "must": "0.12.0",
     "chai": "3.2.0"

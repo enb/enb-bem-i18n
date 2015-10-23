@@ -22,10 +22,12 @@
  */
 var path = require('path'),
     tanker = require('../exlib/tanker'),
-    asyncRequire = require('enb/lib/fs/async-require'),
-    dropRequireCache = require('enb/lib/fs/drop-require-cache');
+    enb = require('enb'),
+    buildFlow = enb.buildFlow || require('enb/lib/build-flow'),
+    asyncRequire = require('enb-async-require'),
+    clearRequire = require('clear-require');
 
-module.exports = require('enb/lib/build-flow').create()
+module.exports = buildFlow.create()
     .name('i18n-lang-js')
     .target('target', '?.lang.{lang}.js')
     .defineRequiredOption('lang')
@@ -39,7 +41,7 @@ module.exports = require('enb/lib/build-flow').create()
             promise;
 
         if (cache.needRebuildFile(cacheKey, keysetsFilename)) {
-            dropRequireCache(require, keysetsFilename);
+            clearRequire(keysetsFilename);
             promise = asyncRequire(keysetsFilename)
                 .then(function (keysets) {
                     cache.cacheFileInfo(cacheKey, keysetsFilename);

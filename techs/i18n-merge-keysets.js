@@ -19,10 +19,12 @@
  * ```
  */
 var vow = require('vow'),
-    asyncRequire = require('enb/lib/fs/async-require'),
-    dropRequireCache = require('enb/lib/fs/drop-require-cache');
+    enb = require('enb'),
+    buildFlow = enb.buildFlow || require('enb/lib/build-flow'),
+    asyncRequire = require('enb-async-require'),
+    clearRequire = require('clear-require');
 
-module.exports = require('enb/lib/build-flow.js').create()
+module.exports = buildFlow.create()
     .name('i18n-merge-keysets')
     .defineRequiredOption('lang')
     .useDirList('i18n')
@@ -46,7 +48,7 @@ module.exports = require('enb/lib/build-flow.js').create()
                     promise;
 
                 if (cache.needRebuildFile(cacheKey, filename)) {
-                    dropRequireCache(require, filename);
+                    clearRequire(filename);
                     promise = asyncRequire(filename)
                         .then(function (keysets) {
                             cache.cacheFileInfo(cacheKey, filename);
