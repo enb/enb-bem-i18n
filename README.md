@@ -236,7 +236,7 @@ common.blocks/
 
 >Подробно про API использования ядра `i18n` читайте в разделе [API `i18n`](#api-i18n).
 
->Примеры всех вариантов использования ядра рассмотрены в [тестах к технологии](https://github.com/enb-bem/enb-bem-i18n/blob/master/test/techs/i18n-merge-keysets.test.js).
+>Примеры всех вариантов использования ядра рассмотрены в [тестах к технологии](https://github.com/enb-bem/enb-bem-i18n/blob/master/test/techs/i18n/).
 
 ## Описание работы с технологиями
 
