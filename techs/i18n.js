@@ -106,7 +106,7 @@ module.exports = buildFlow.create()
                         '        (global.BEM || (global.BEM = {})).I18N = __i18n__;',
                         '    }'
                     ] : '',
-                    '})(this);'
+                    '})(typeof window !== "undefined" ? window : global);'
                 ).join(EOL);
             }, this);
     })
