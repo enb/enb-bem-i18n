@@ -57,7 +57,7 @@ module.exports = buildFlow.create()
                     prev.push(this.__self.getKeysetBuildResult(keysetName, keysets[keysetName], lang));
                     return prev;
                 }.bind(this), []);
-            return this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang);
+            return res.length ? this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang) : '';
         }, this);
     })
     .methods({
