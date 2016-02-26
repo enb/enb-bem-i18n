@@ -25,7 +25,10 @@ var path = require('path'),
     enb = require('enb'),
     buildFlow = enb.buildFlow || require('enb/lib/build-flow'),
     asyncRequire = require('enb-async-require'),
-    clearRequire = require('clear-require');
+    clearRequire = require('clear-require'),
+
+    ALL_LANGUAGES = 'all',
+    NEW_LINE = '\n';
 
 module.exports = buildFlow.create()
     .name('i18n-lang-js')
@@ -57,15 +60,27 @@ module.exports = buildFlow.create()
                     prev.push(this.__self.getKeysetBuildResult(keysetName, keysets[keysetName], lang));
                     return prev;
                 }.bind(this), []);
-            return this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang);
+
+            return res.length ? this.wrapJs(lang, res.join(NEW_LINE)) : '';
         }, this);
     })
     .methods({
-        getPrependJs: function (lang) {
-            return lang === 'all' ? '' : 'if (typeof BEM !== \'undefined\' && BEM.I18N) {';
-        },
-        getAppendJs: function (lang) {
-            return lang === 'all' ? '' : '\n\nBEM.I18N.lang(\'' + lang + '\');\n\n}\n';
+        /**
+         * @param {String} lang
+         * @param {String} text
+         * @returns {String}
+         */
+        wrapJs: function (lang, text) {
+            if (lang === ALL_LANGUAGES) {
+                return text;
+            }
+
+            return [
+                'if (typeof BEM !== \'undefined\' && BEM.I18N) {',
+                text,
+                'BEM.I18N.lang(\'' + lang + '\');',
+                '}'
+            ].join(NEW_LINE + NEW_LINE);
         }
     })
     .staticMethods({
@@ -82,7 +97,7 @@ module.exports = buildFlow.create()
                 });
                 res.push('}, {\n"lang": "' + lang + '"\n});');
             }
-            return res.join('\n');
+            return res.join(NEW_LINE);
         }
     })
     .createTech();

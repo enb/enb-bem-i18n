@@ -23,13 +23,14 @@ describe('i18n-lang-js', function () {
                 }
             ],
             expected = [
-                'if (typeof BEM !== \'undefined\' && BEM.I18N) {BEM.I18N.decl(\'scope1\', {',
+                'if (typeof BEM !== \'undefined\' && BEM.I18N) {',
+                '',
+                'BEM.I18N.decl(\'scope1\', {',
                 '    "key11": "val11",',
                 '    "key12": "val12"',
                 '}, {',
                 '"lang": "lang"',
                 '});',
-                '',
                 'BEM.I18N.decl(\'scope2\', {',
                 '    "key21": "val21",',
                 '    "key22": "val22"',
@@ -39,8 +40,7 @@ describe('i18n-lang-js', function () {
                 '',
                 'BEM.I18N.lang(\'lang\');',
                 '',
-                '}',
-                ''
+                '}'
             ].join('\n');
 
         return build(keysets, 'lang')
@@ -49,20 +49,13 @@ describe('i18n-lang-js', function () {
             });
     });
 
-    it('must get valid *.lang from empty *.keyset file', function () {
+    it('must get empty *.lang from empty *.keyset file', function () {
         var keysets = [
                 {
                     'lang.js': {}
                 }
             ],
-            expected = [
-                'if (typeof BEM !== \'undefined\' && BEM.I18N) {',
-                '',
-                'BEM.I18N.lang(\'lang\');',
-                '',
-                '}',
-                ''
-            ].join('\n');
+            expected = '';
 
         return build(keysets, 'lang')
             .then(function (res) {
@@ -91,7 +84,9 @@ describe('i18n-lang-js', function () {
                 initial = { val: 'val', mtime: time },
                 modified = { val: 'val2', mtime: time },
                 expected = [
-                    'if (typeof BEM !== \'undefined\' && BEM.I18N) {BEM.I18N.decl(\'scope\', {',
+                    'if (typeof BEM !== \'undefined\' && BEM.I18N) {',
+                    '',
+                    'BEM.I18N.decl(\'scope\', {',
                     '    "key": "val"',
                     '}, {',
                     '"lang": "lang"',
@@ -99,8 +94,7 @@ describe('i18n-lang-js', function () {
                     '',
                     'BEM.I18N.lang(\'lang\');',
                     '',
-                    '}',
-                    ''
+                    '}'
                 ].join('\n');
 
             return buildWithCache(initial, modified, 'lang')
@@ -113,7 +107,9 @@ describe('i18n-lang-js', function () {
             var initial = { val: 'val', mtime: new Date(1) },
                 modified = { val: 'val2', mtime: new Date(2) },
                 expected = [
-                    'if (typeof BEM !== \'undefined\' && BEM.I18N) {BEM.I18N.decl(\'scope\', {',
+                    'if (typeof BEM !== \'undefined\' && BEM.I18N) {',
+                    '',
+                    'BEM.I18N.decl(\'scope\', {',
                     '    "key": "val2"',
                     '}, {',
                     '"lang": "lang"',
@@ -121,8 +117,7 @@ describe('i18n-lang-js', function () {
                     '',
                     'BEM.I18N.lang(\'lang\');',
                     '',
-                    '}',
-                    ''
+                    '}'
                 ].join('\n');
 
             return buildWithCache(initial, modified, 'lang')
