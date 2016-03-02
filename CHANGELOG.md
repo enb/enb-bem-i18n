@@ -1,6 +1,11 @@
 История изменений
 =================
 
+0.5.1
+-----
+
+* Исправлена `i18n-lang-js` технология: если нет `keysets`, должен сгенерироваться пустой `?.lang.{lang}.js` файл ([#85]).
+
 0.5.0
 -----
 
@@ -81,6 +86,7 @@
 * Добавлена `i18n-lang-js` технология.
 * Добавлена `i18n-merge-keysets` технология.
 
+[#85]: https://github.com/enb-bem/enb-bem-i18n/pull/85
 [#51]: https://github.com/enb-bem/enb-bem-i18n/issues/51
 [#29]: https://github.com/enb-bem/enb-bem-i18n/issues/29
 [#27]: https://github.com/enb-bem/enb-bem-i18n/issues/27
