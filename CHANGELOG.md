@@ -1,6 +1,13 @@
 История изменений
 =================
 
+1.1.1
+-----
+
+### Исправление ошибок
+
+* Исправлено получение `global` объекта в `CommonJS` ([#81]).
+
 1.1.0
 -----
 
@@ -149,6 +156,7 @@ node.addTechs([
 * Добавлена `i18n-lang-js` технология.
 * Добавлена `i18n-merge-keysets` технология.
 
+[#81]: https://github.com/enb-bem/enb-bem-i18n/pull/81
 [#80]: https://github.com/enb-bem/enb-bem-i18n/pull/80
 [#76]: https://github.com/enb-bem/enb-bem-i18n/issues/76
 [#51]: https://github.com/enb-bem/enb-bem-i18n/issues/51
