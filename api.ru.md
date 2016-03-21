@@ -41,7 +41,7 @@
 
 Тип: `String`. По умолчанию: `?.i18n`.
 
-Имя таргета, откуда будет доступен список исходных директорий для сборки. Список директорий предоставляет технология [files](https://github.com/enb-bem/enb-bem-techs/blob/master/docs/api.ru.md#files) пакета [enb-bem-techs](https://ru.bem.info/tools/bem/enb-bem-techs/readme/).
+Имя таргета, откуда будет доступен список исходных директорий для сборки. Список директорий предоставляет технология [files](https://github.com/enb/enb-bem-techs/blob/master/docs/api.ru.md#files) пакета [enb-bem-techs](https://ru.bem.info/tools/bem/enb-bem-techs/readme/).
 
 #### sourceDirSuffixes
 

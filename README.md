@@ -2,10 +2,10 @@ enb-bem-i18n
 ============
 
 [![NPM version](https://img.shields.io/npm/v/enb-bem-i18n.svg?style=flat)](https://www.npmjs.org/package/enb-bem-i18n)
-[![Build Status](https://img.shields.io/travis/enb-bem/enb-bem-i18n/master.svg?style=flat&label=tests)](https://travis-ci.org/enb-bem/enb-bem-i18n)
+[![Build Status](https://img.shields.io/travis/enb/enb-bem-i18n/master.svg?style=flat&label=tests)](https://travis-ci.org/enb/enb-bem-i18n)
 [![Build status](https://img.shields.io/appveyor/ci/blond/enb-bh.svg?style=flat&label=windows)](https://ci.appveyor.com/project/blond/enb-bh)
-[![Coverage Status](https://img.shields.io/coveralls/enb-bem/enb-bem-i18n.svg?style=flat)](https://coveralls.io/r/enb-bem/enb-bem-i18n?branch=master)
-[![devDependency Status](https://img.shields.io/david/enb-bem/enb-bem-i18n.svg?style=flat)](https://david-dm.org/enb-bem/enb-bem-i18n)
+[![Coverage Status](https://img.shields.io/coveralls/enb/enb-bem-i18n.svg?style=flat)](https://coveralls.io/r/enb/enb-bem-i18n?branch=master)
+[![devDependency Status](https://img.shields.io/david/enb/enb-bem-i18n.svg?style=flat)](https://david-dm.org/enb/enb-bem-i18n)
 
 Пакет предоставляет набор ENB-технологий для сборки файлов, обеспечивающих мультиязыковую поддержку БЭМ-проектов. Под мультиязыковой поддержкой понимается интернационализация (далее по тексту также i18n).
 
@@ -236,7 +236,7 @@ common.blocks/
 
 >Подробно про API использования ядра `i18n` читайте в разделе [API `i18n`](#api-i18n).
 
->Примеры всех вариантов использования ядра рассмотрены в [тестах к технологии](https://github.com/enb-bem/enb-bem-i18n/blob/master/test/techs/i18n/).
+>Примеры всех вариантов использования ядра рассмотрены в [тестах к технологии](https://github.com/enb/enb-bem-i18n/blob/master/test/techs/i18n/).
 
 ## Описание работы с технологиями
 
@@ -317,7 +317,7 @@ index.ru.bemhtml.js  # index.lang.ru.js + index.bemhtml.js
 * в BEMHTML-шаблонах с помощью метода `this.require()`;
 * в BH — из пространства имен `bh.lib`.
 
-> Подробнее о том, как подключаются сторонние библиотеки смотрите в документации к пакетам [enb-bemxjst](https://github.com/enb-bem/enb-bemxjst/blob/master/README.md#Подключение-сторонних-библиотек) и [enb-bh](https://github.com/enb-bem/enb-bh/blob/master/README.md#Подключение-сторонних-библиотек).
+> Подробнее о том, как подключаются сторонние библиотеки смотрите в документации к пакетам [enb-bemxjst](https://github.com/enb/enb-bemxjst/blob/master/README.md#Подключение-сторонних-библиотек) и [enb-bh](https://github.com/enb/enb-bh/blob/master/README.md#Подключение-сторонних-библиотек).
 
 Файлы `i18n` нужно собирать так, чтобы `i18n`-функция была доступна из переменной `BEM.I18N` в любой среде исполнения. Для этого следует использовать опцию [exports](api.ru.md) со значением `{ globals: 'force' }`.
 
@@ -426,7 +426,7 @@ module.exports = function(config) {
 
 На основе этой информации в процессе сборки можно составить список БЭМ-сущностей, переводы которых необходимы для работы в браузере.
 
-> Для сборки на основе зависимостей по технологиям понадобится [depsByTechToBemdecl](https://github.com/enb-bem/enb-bem-techs/blob/master/docs/api.ru.md#depsbytechtobemdecl) из пакета [enb-bem-techs](https://github.com/enb-bem/enb-bem-techs/blob/master/README.md).
+> Для сборки на основе зависимостей по технологиям понадобится [depsByTechToBemdecl](https://github.com/enb/enb-bem-techs/blob/master/docs/api.ru.md#depsbytechtobemdecl) из пакета [enb-bem-techs](https://github.com/enb/enb-bem-techs/blob/master/README.md).
 
 **Пример сборки i18n для работы в браузере**
 
@@ -609,7 +609,7 @@ i18n('scope', 'key'); // 'val'
 
 #### BEMHTML
 
-После подключения `BEM.I18N` как [сторонней библиотеки](https://github.com/enb-bem/enb-bemxjst/blob/master/README.md#Подключение-сторонних-библиотек) ее можно использовать в шаблонах с помощью метода `this.require`.
+После подключения `BEM.I18N` как [сторонней библиотеки](https://github.com/enb/enb-bemxjst/blob/master/README.md#Подключение-сторонних-библиотек) ее можно использовать в шаблонах с помощью метода `this.require`.
 
 ```js
 block('button').elem('tooltip').content()(function () {
@@ -622,7 +622,7 @@ block('button').elem('tooltip').content()(function () {
 
 #### BH
 
-После подключения `BEM.I18N` как [сторонней библиотеки](https://github.com/enb-bem/enb-bh/blob/master/README.md#Подключение-сторонних-библиотек) ее можно использовать в шаблонах из пространства имен `bh.lib`.
+После подключения `BEM.I18N` как [сторонней библиотеки](https://github.com/enb/enb-bh/blob/master/README.md#Подключение-сторонних-библиотек) ее можно использовать в шаблонах из пространства имен `bh.lib`.
 
 ```js
 bh.match('block', function (ctx) {

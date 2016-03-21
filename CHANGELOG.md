@@ -86,7 +86,7 @@ node.addTechs([
 
 ### Крупные изменения
 
-* Улучшена поддержка параметризованных склоняемых ключей ([#9]). Все поддерживаемые случаи описаны в [тестах](https://github.com/enb-bem/enb-bem-i18n/blob/master/test/exlib/tanker.test.js) модуля `tanker`.
+* Улучшена поддержка параметризованных склоняемых ключей ([#9]). Все поддерживаемые случаи описаны в [тестах](https://github.com/enb/enb-bem-i18n/blob/master/test/exlib/tanker.test.js) модуля `tanker`.
 * Из модуля `tanker` были удалены неиспользумые методы `parseXml` и `domToJs` ([#9]).
 
 ### Исправление ошибок
@@ -156,13 +156,13 @@ node.addTechs([
 * Добавлена `i18n-lang-js` технология.
 * Добавлена `i18n-merge-keysets` технология.
 
-[#81]: https://github.com/enb-bem/enb-bem-i18n/pull/81
-[#80]: https://github.com/enb-bem/enb-bem-i18n/pull/80
-[#76]: https://github.com/enb-bem/enb-bem-i18n/issues/76
-[#51]: https://github.com/enb-bem/enb-bem-i18n/issues/51
-[#29]: https://github.com/enb-bem/enb-bem-i18n/issues/29
-[#27]: https://github.com/enb-bem/enb-bem-i18n/issues/27
-[#21]: https://github.com/enb-bem/enb-bem-i18n/issues/21
-[#15]: https://github.com/enb-bem/enb-bem-i18n/issues/15
-[#13]: https://github.com/enb-bem/enb-bem-i18n/issues/13
-[#9]: https://github.com/enb-bem/enb-bem-i18n/pull/9
+[#81]: https://github.com/enb/enb-bem-i18n/pull/81
+[#80]: https://github.com/enb/enb-bem-i18n/pull/80
+[#76]: https://github.com/enb/enb-bem-i18n/issues/76
+[#51]: https://github.com/enb/enb-bem-i18n/issues/51
+[#29]: https://github.com/enb/enb-bem-i18n/issues/29
+[#27]: https://github.com/enb/enb-bem-i18n/issues/27
+[#21]: https://github.com/enb/enb-bem-i18n/issues/21
+[#15]: https://github.com/enb/enb-bem-i18n/issues/15
+[#13]: https://github.com/enb/enb-bem-i18n/issues/13
+[#9]: https://github.com/enb/enb-bem-i18n/pull/9
