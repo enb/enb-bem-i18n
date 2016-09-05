@@ -5,7 +5,7 @@
     "private": true,
     "dependencies": {
         "bem-core": "2.6.0",
-        "bem-core-v3": "3.0.1"
+        "bem-core-v3": "bem/bem-core#3.0.1"
     },
     "ignore": [
         "coverage",
