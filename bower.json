@@ -4,8 +4,7 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "bem-core": "2.6.0",
-        "bem-core-v3": "git://github.com/bem/bem-core.git#issues/576@v3"
+        "bem-core": "3.0.1"
     },
     "ignore": [
         "coverage",
