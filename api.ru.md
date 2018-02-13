@@ -41,7 +41,7 @@
 
 Тип: `String`. По умолчанию: `?.i18n`.
 
-Имя таргета, откуда будет доступен список исходных директорий для сборки. Список директорий предоставляет технология [files](https://github.com/enb/enb-bem-techs/blob/master/docs/api.ru.md#files) пакета [enb-bem-techs](https://ru.bem.info/tools/bem/enb-bem-techs/readme/).
+Имя таргета, откуда будет доступен список исходных директорий для сборки. Список директорий предоставляет технология [files](https://github.com/enb/enb-bem-techs/blob/master/docs/api/api.ru.md#files) пакета [enb-bem-techs](https://github.com/enb/enb-bem-techs).
 
 #### sourceDirSuffixes
 
@@ -49,8 +49,6 @@
 
 Суффиксы директорий, по которым происходит отбор для дальнейшей сборки.
 
-
--------------------------------------
 **Пример**
 
 ```js
@@ -83,9 +81,9 @@ module.exports = function(config) {
 
 `i18n` — технология сборки, которая транслирует данные из `?.keysets.<lang>.js`-файлов в JavaScript.
 
-Технология `i18n` инициализирует ядро `i18n` данными из объединенных keyset-файлов и возвращает функцию `i18n`, которую можно использовать из [шаблонов](/README.md#в-шаблонах) или [клиентского JavaScript](README.md#В-javascript).
+Технология `i18n` инициализирует ядро `i18n` данными из объединенных keyset-файлов и возвращает функцию `i18n`, которую можно использовать из [шаблонов](README.md#в-шаблонах) или [клиентского JavaScript](README.md#В-javascript).
 
->API функции `i18n` описан в разделе [API `i18n`](README.md#api-i18n).
+>API функции `i18n` описан в разделе [API i18n](README.md#api-i18n).
 
 ### Опции
 
@@ -99,7 +97,6 @@ module.exports = function(config) {
 Тип: `String`. По умолчанию: `?.lang.<lang>.js`.
 
 Имя файла, куда будет записан результат сборки данных из `?.keysets.<lang>.js`-файла — скомпилированный файл `?.lang.<lang>.js`.
-
 
 #### lang
 
@@ -131,8 +128,8 @@ module.exports = function(config) {
 * `commonJS: true` — скомпилированный файл можно подключить как CommonJS модуль.
 * `ym: true` — функция `i18n` будет доступна из модульной системы [YModules](https://ru.bem.info/tools/bem/modules/).
 
--------------------------------------
 **Пример**
+
 ```js
 var I18NTech  = require('enb-bem-i18n/techs/i18n'),
     KeysetsTech = require('enb-bem-i18n/techs/keysets'),
@@ -185,7 +182,6 @@ module.exports = function(config) {
 
 Язык, для которого небходимо собрать файл.
 
------------------------------
 **Пример**
 
 ```js
